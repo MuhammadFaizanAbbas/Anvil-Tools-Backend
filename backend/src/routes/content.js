@@ -56,10 +56,10 @@ router.post('/analytics/event', run(async (req, res) => {
   res.json({ ok: true, tool });
 }));
 router.get('/public/posts', run(async (req, res) => {
-  res.json(unwrap(await db.from('posts').select('slug,title,excerpt,published_at,category_slug').eq('status','published').order('published_at',{ascending:false}).limit(100)));
+  res.json(unwrap(await db.from('posts').select('slug,title,excerpt,published_at,category_slug,cover_image_id,cover_alt,tags').eq('status','published').order('published_at',{ascending:false}).limit(100)));
 }));
 router.get('/public/posts/:slug', run(async (req,res) => {
-  const post=unwrap(await db.from('posts').select('slug,title,excerpt,body,published_at,seo_title,seo_description').eq('slug',req.params.slug).eq('status','published').maybeSingle());
+  const post=unwrap(await db.from('posts').select('slug,title,excerpt,body,published_at,seo_title,seo_description,cover_image_id,cover_alt,tags').eq('slug',req.params.slug).eq('status','published').maybeSingle());
   if(!post)return res.status(404).json({error:'Article not found'});
   res.json(post);
 }));

@@ -17,9 +17,11 @@ app.get('/api/auth/config', (req, res) => {
   res.json({ url: process.env.SUPABASE_URL, anonKey: key });
 });
 app.use('/api', requireDatabase);
+app.use('/api/admin/media', require('./routes/media'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/admin', require('./routes/workspace'));
 app.use('/api', require('./routes/content'));
+app.use('/api/public', require('./routes/articles'));
 app.use('/api', require('./routes/contact'));
 app.use('/api/temp-mail', require('./routes/temp-mail'));
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));

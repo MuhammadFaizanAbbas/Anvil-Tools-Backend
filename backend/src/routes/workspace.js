@@ -30,11 +30,14 @@ router.put('/users/:id',run(async(req,res)=>{
  res.json({ok:true});
 }));
 router.post('/documents',run(async(req,res)=>{
- const p=req.body||{};
+ const p={tags:[],cover_image_id:null,cover_alt:'',...(req.body||{})};
  const text=(key,max,required=false)=>typeof p[key]==='string'&&p[key].length<=max&&(!required||p[key].trim());
  if(!text('id',150,true)||!text('slug',150,true)||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(p.slug)||!text('title',300,true)||!text('body',100000)||!text('excerpt',5000)||!text('seo_title',160)||!text('seo_description',320)||!['draft','published'].includes(p.status)|| (p.category_slug!==null && (typeof p.category_slug!=='string'||p.category_slug.length>100)))return res.status(400).json({error:'Check the article fields and limits.'});
+ if(!Array.isArray(p.tags)||p.tags.length>12||p.tags.some(tag=>typeof tag!=='string'||!tag.trim()||tag.length>40)||typeof p.cover_alt!=='string'||p.cover_alt.length>300||(p.cover_image_id!==null&&!validId(p.cover_image_id)))return res.status(400).json({error:'Use up to 12 tags (40 characters each), a valid image, and alt text up to 300 characters.'});
+ if(p.cover_image_id){const image=unwrap(await db.from('media_assets').select('id').eq('id',p.cover_image_id).maybeSingle());if(!image)return res.status(400).json({error:'Select an uploaded image from the media library.'});}
+ if(p.status==='published'&&p.cover_image_id&&!p.cover_alt.trim())return res.status(400).json({error:'Describe the cover image with alt text before publishing.'});
  if(p.status==='published'&&!p.body.trim())return res.status(400).json({error:'Add article content before publishing.'});
- const result=await db.rpc('save_post_document',{document:{id:p.id,slug:p.slug,title:p.title.trim(),excerpt:p.excerpt,body:p.body,status:p.status,category_slug:p.category_slug,seo_title:p.seo_title,seo_description:p.seo_description},actor:req.user.id});
+ const result=await db.rpc('save_post_document',{document:{id:p.id,slug:p.slug,title:p.title.trim(),excerpt:p.excerpt,body:p.body,status:p.status,category_slug:p.category_slug,seo_title:p.seo_title,seo_description:p.seo_description,cover_image_id:p.cover_image_id,cover_alt:p.cover_alt.trim(),tags:[...new Set(p.tags.map(tag=>tag.trim()))]},actor:req.user.id});
  if(result.error?.code==='23505')return res.status(409).json({error:'That article slug is already in use.'});
  res.json({ok:true,post:unwrap(result)});
 }));

@@ -1,4 +1,4 @@
-﻿import {admin,cors,json,failure} from '../_shared/auth.ts';
+import {admin,cors,json,failure} from '../_shared/auth.ts';
 // Optional authenticated gateway to the Vercel admin API. Browser access stays role checked.
 Deno.serve(async req=>{let headers:Record<string,string>={};try{
  headers=cors(req);if(req.method==='OPTIONS')return new Response(null,{status:204,headers});

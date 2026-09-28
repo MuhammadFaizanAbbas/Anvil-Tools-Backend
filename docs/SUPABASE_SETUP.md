@@ -2,11 +2,11 @@
 
 ## 1. Database
 
-For a NEW Supabase project, run **supabase/full-schema.sql** once in the SQL Editor. It includes migrations 001–004 and the starter catalog in one transaction.
+For a NEW Supabase project, run **supabase/full-schema.sql** once in the SQL Editor. It includes migrations 001–005 and the starter catalog in one transaction.
 
 For an EXISTING installation, run only missing files in **supabase/migrations/** in numeric order; do not replace your existing database. Migration 004 backfills existing Auth users with member profiles and preserves existing posts/tools/contact records.
 
-Tables cover tool catalog/counters; complete blog articles with SEO fields, categories and revisions; user profiles and roles; contact requests and SMTP job logs; audit events; daily aggregate analytics; site settings; page drafts; media metadata; temporary inbox capabilities; and shared rate limiting. The private editorial-media storage bucket accepts JPEG/PNG/WebP up to 5 MB. Page/media tables and storage are foundations; this release's UI manages articles, categories, tools, users, and contacts. It does not provide a media uploader or generic legal-page editor.
+Tables cover tool catalog/counters; complete blog articles with SEO fields, categories and revisions; user profiles and roles; contact requests and SMTP job logs; audit events; daily aggregate analytics; site settings; page drafts; media metadata; temporary inbox capabilities; and shared rate limiting. The editor accepts JPEG/PNG/WebP uploads up to 3 MB and 24 megapixels. The server decodes images, removes metadata, and resizes them to at most 2000 pixels as WebP. Images are stored in the private editorial-media bucket; the media library uses temporary signed previews. Only covers attached to published posts are served publicly. Migration 005 adds cover references, alt text, tags, and image dimensions. A generic legal-page editor is not included.
 
 Browser database roles cannot edit privileges or private records. Every admin API request verifies the Auth token and reads the role. User-supplied metadata never sets access. Profiles start as member. Members may authenticate but cannot open the admin workspace. Admins can invite users and grant/revoke admin access. Owners and self-access changes are protected. Disabling a profile stops admin API access immediately; it does not delete the Auth account.
 
@@ -58,9 +58,9 @@ In Edge Function secrets set FRONTEND_ORIGINS=https://anviltools.vercel.app, BAC
 
 ## 5. Publishing and panels
 
-Overview, Tool library, Content, Analytics, Contact inbox, Team & access, Categories, Audit log, and Settings each have their own panel. Content supports full plain-text articles, category, excerpt, SEO fields, draft/published state, revision history, and loading an earlier revision into the editor for an explicit save. Use blank lines for paragraphs. HTML is rendered as text.
+Overview, Tool library, Content, Analytics, Contact inbox, Team & access, Categories, Audit log, and Settings each have their own panel. Content supports full plain-text articles, cover uploads and a reusable media library, required cover alt text for publishing, up to 12 tags, category selection, excerpt, SEO fields with a live search preview, draft/published state, revision history, and loading an earlier revision into the editor for an explicit save. Use blank lines for paragraphs. HTML is rendered as text.
 
-New published articles appear under Latest from the workspace on the Guides page and open at `/blog/article.html?slug=...`. Existing static guides remain intact. New articles currently load from the API in the browser; automatic static HTML/sitemap generation for these articles is not included. Saved SEO fields are available to a future static publishing pipeline; they are not a promise of search indexing. Tool catalog edits remain database edits and do not rewrite the static public tool pages.
+New published articles appear under Latest from the workspace on the Guides page and open at `/journal/slug`. Vercel rewrites serve complete HTML from the API, including SEO title/description, canonical URL, Open Graph cover, Twitter card, and BlogPosting structured data. The dynamic `/journal-sitemap.xml` is listed in robots.txt. Existing static guides remain intact. Search indexing is controlled by search engines. For another frontend host, configure equivalent reverse-proxy routes as described in DEPLOYMENT.md. Tool catalog edits remain database edits and do not rewrite the static public tool pages.
 
 Daily analytics contain events received by `/api/analytics/event`, not fabricated visitors. Automatic browser tracking remains disabled. Site settings are displayed read-only; advertising remains disabled. No live project configuration, Google console changes, SQL execution, or Edge deployment is performed without your project connection.
 

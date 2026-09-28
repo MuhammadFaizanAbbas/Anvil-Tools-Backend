@@ -9,3 +9,7 @@ Apply supabase/migrations in numeric order, then supabase/seed.sql. Create an au
 Check /api/health (databaseConfigured must be true), then /api/tools. The API root / intentionally returns JSON 404. Frontend: https://anviltools.vercel.app.
 
 The public frontend and admin redesign is deployed from Anvil-Tools. API responses now carry X-Robots-Tag: noindex, nofollow so search engines use public tool pages rather than API endpoints. Privacy preferences and disabled ad inventory are managed by the frontend; no advertising scripts are served by this API.
+
+## Contact requests and SMTP
+
+The API now saves support requests, logs alert/receipt jobs, sends SMTP email, and supports authenticated admin replies and retries. Run migration 003 and configure SMTP as described in [docs/CONTACT_SETUP.md](docs/CONTACT_SETUP.md). Contact alert recipient: faizan@velloxtech.com. Receipt and replies go to the submitted email. Tests use mocked SMTP and send no real email.

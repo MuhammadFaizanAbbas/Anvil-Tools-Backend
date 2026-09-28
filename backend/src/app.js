@@ -12,6 +12,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true, service: 'anvil-api', 
 app.use('/api', requireDatabase);
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api', require('./routes/content'));
+app.use('/api', require('./routes/contact'));
 app.use('/api/temp-mail', require('./routes/temp-mail'));
 app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
 app.use((error, req, res, next) => {

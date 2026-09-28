@@ -1,0 +1,30 @@
+{
+  "name": "anvil-tools-admin",
+  "version": "1.0.0",
+  "description": "Anvil Tools: Vercel Express API, cPanel static frontend, Supabase database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "dev:api": "node --watch server.js",
+    "dev:frontend": "node scripts/serve-frontend.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "node verify.js"
+  },
+  "keywords": [
+    "static-site",
+    "admin-panel",
+    "supabase",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

@@ -3,6 +3,8 @@ const express = require('express');
 const { supabaseAdmin, requireDatabase } = require('./lib/supabase');
 const app = express();
 app.disable('x-powered-by');
+// API responses are not public search landing pages.
+app.use((req, res, next) => { res.set('X-Robots-Tag', 'noindex, nofollow'); next(); });
 app.use(require('./middleware/cors'));
 app.use(express.json({ limit: '2mb' }));
 app.use('/api', (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });

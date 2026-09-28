@@ -7,3 +7,5 @@ Configure SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAI
 Apply supabase/migrations in numeric order, then supabase/seed.sql. Create an authorized Supabase Auth user matching ADMIN_EMAILS.
 
 Check /api/health (databaseConfigured must be true), then /api/tools. The API root / intentionally returns JSON 404. Frontend: https://anviltools.vercel.app.
+
+The public frontend and admin redesign is deployed from Anvil-Tools. API responses now carry X-Robots-Tag: noindex, nofollow so search engines use public tool pages rather than API endpoints. Privacy preferences and disabled ad inventory are managed by the frontend; no advertising scripts are served by this API.

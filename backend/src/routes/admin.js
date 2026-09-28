@@ -11,12 +11,12 @@ router.post('/login', run(async (req, res) => {
   if (!auth) return res.status(503).json({ error: 'Supabase Auth is not configured' });
   const { data, error } = await auth.auth.signInWithPassword({ email, password });
   if (error) return res.status(401).json({ error: 'Invalid credentials' });
-  if (!isAdmin(data.user)) return res.status(403).json({ error: 'Admin access required' });
+  if (!(await isAdmin(data.user))) return res.status(403).json({ error: 'Admin access required' });
   res.json({ ok: true, user: { id: data.user.id, email: data.user.email },
     accessToken: data.session.access_token, expiresAt: data.session.expires_at });
 }));
 router.get('/me', requireAdmin, (req, res) => {
-  res.json({ authenticated: true, user: { id: req.user.id, email: req.user.email } });
+  res.json({ authenticated: true, user: { id: req.user.id, email: req.user.email, role: req.role } });
 });
 router.post('/logout', requireAdmin, run(async (req, res) => {
   const { error } = await supabaseAdmin.auth.admin.signOut(req.accessToken, 'local');

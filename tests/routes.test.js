@@ -6,7 +6,7 @@ let writes = [];
 const record = { slug: 'word-counter', name: 'Word Counter' };
 const db = {
   auth: { getUser: async token => ({ data: { user: token === 'invalid' ? null : {
-    id: 'user', email: token === 'admin' ? 'admin@example.com' : 'member@example.com',
+    id: 'user', email_confirmed_at: '2026-01-01', email: token === 'admin' ? 'admin@example.com' : 'member@example.com',
   } } }) },
   from(table) {
     const query = {

@@ -1,4 +1,4 @@
-﻿const { test, before, after } = require('node:test');
+const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 process.env.ADMIN_EMAILS = 'admin@example.com';
@@ -12,7 +12,7 @@ nodemailer.createTransport = () => ({ sendMail: async mail => {
   sent.push(mail); return { accepted: [mail.to.address], messageId: mail.messageId };
 } });
 const db = {
-  auth: { getUser: async token => ({ data: { user: token === 'admin' ? { email: 'admin@example.com' } : { email: 'other@example.com' } } }) },
+  auth: { getUser: async token => ({ data: { user: token === 'admin' ? { email: 'admin@example.com', email_confirmed_at: '2026-01-01' } : { email: 'other@example.com' } } }) },
   from(table) {
     const rows = table === 'contact_requests' ? contacts : jobs;
     let filters = [], action = 'select', values, bounds;

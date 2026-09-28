@@ -1,0 +1,8 @@
+﻿# Each private function validates the user with Supabase Auth and database roles.
+# Disable only the gateway JWT check so both current signing keys and legacy JWTs work.
+[functions.workspace-api]
+verify_jwt = false
+[functions.maintenance]
+verify_jwt = false
+[functions.published-posts]
+verify_jwt = false

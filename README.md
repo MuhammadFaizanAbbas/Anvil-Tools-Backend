@@ -13,3 +13,7 @@ The public frontend and admin redesign is deployed from Anvil-Tools. API respons
 ## Contact requests and SMTP
 
 The API now saves support requests, logs alert/receipt jobs, sends SMTP email, and supports authenticated admin replies and retries. Run migration 003 and configure SMTP as described in [docs/CONTACT_SETUP.md](docs/CONTACT_SETUP.md). Contact alert recipient: faizan@velloxtech.com. Receipt and replies go to the submitted email. Tests use mocked SMTP and send no real email.
+
+## Google sign-in and workspace roles
+
+Run migration 004 for existing databases, or full-schema.sql for a fresh Supabase project. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) for Google OAuth, member/admin/owner access, article revisions, private storage foundations, and the three optional Edge Functions. The server checks database roles on every admin request and reserves verified ADMIN_EMAILS accounts as protected recovery owners.

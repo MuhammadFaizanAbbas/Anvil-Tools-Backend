@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { supabaseAdmin: db } = require('../lib/supabase');
 const { requireAdmin } = require('../middleware/auth');
 const run = require('../lib/async-handler');
+const crypto = require('node:crypto');
 function unwrap(result) { if (result.error) throw result.error; return result.data; }
 const postShape = row => ({ ...row, updatedAt: row.updated_at?.slice(0, 10) });
 
@@ -34,7 +35,8 @@ router.post('/posts', requireAdmin, run(async (req, res) => {
       typeof excerpt !== 'string' || excerpt.length > 5000 || !['draft', 'published'].includes(status)) {
     return res.status(400).json({ error: 'Valid title, slug, excerpt and status are required' });
   }
-  const result = await db.from('posts').insert({ id: slug, title: title.trim(), slug, excerpt, status }).select().single();
+  if (status === 'published') return res.status(400).json({ error: 'Create a draft, then add article content in the editor before publishing.' });
+  const result = await db.from('posts').insert({ id: slug, title: title.trim(), slug, excerpt, status: 'draft' }).select().single();
   if (result.error?.code === '23505') return res.status(409).json({ error: 'Post slug already exists' });
   res.status(201).json({ ok: true, post: postShape(unwrap(result)) });
 }));
@@ -52,7 +54,18 @@ router.get('/site/overview', requireAdmin, run(async (req, res) => {
 router.post('/analytics/event', run(async (req, res) => {
   const { tool } = req.body || {};
   if (typeof tool !== 'string' || !tool || tool.length > 200) return res.status(400).json({ error: 'Tool is required' });
-  unwrap(await db.rpc('record_tool_view', { tool_identifier: tool }));
+  const ip = process.env.VERCEL ? req.get('x-vercel-forwarded-for') : req.socket.remoteAddress;
+  if (!ip) return res.status(503).json({ error: 'Client address unavailable' });
+  const key = 'analytics-ip:' + crypto.createHash('sha256').update(ip).digest('hex');
+  const limit = unwrap(await db.rpc('consume_temp_mail_limit', { client_key: key }));
+  if (!limit.allowed) {
+    res.set('Retry-After', String(limit.resetIn));
+    return res.status(429).json({ error: 'Too many analytics events' });
+  }
+  let record = unwrap(await db.from('tools').select('slug').eq('slug', tool).maybeSingle());
+  if (!record) record = unwrap(await db.from('tools').select('slug').eq('name', tool).maybeSingle());
+  if (!record) return res.status(404).json({ error: 'Tool not found' });
+  unwrap(await db.rpc('record_tool_view', { tool_identifier: record.slug }));
   res.json({ ok: true, tool });
 }));
 router.get('/public/posts', run(async (req, res) => {

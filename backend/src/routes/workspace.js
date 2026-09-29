@@ -1,6 +1,7 @@
 const router=require('express').Router();
 const {supabaseAdmin:db}=require('../lib/supabase');
 const {requireAdmin,isOwner}=require('../middleware/auth');
+const {allowedOrigins}=require('../config/env');
 const run=require('../lib/async-handler');
 const unwrap=result=>{if(result.error)throw result.error;return result.data;};
 const validId=value=>typeof value==='string'&&/^[0-9a-f-]{36}$/i.test(value);
@@ -13,7 +14,9 @@ router.get('/users',run(async(req,res)=>{
 router.post('/users',run(async(req,res)=>{
  const {email,role='member'}=req.body||{};
  if(typeof email!=='string'||email.length>254||!/^\S+@[^\s@]+\.[^\s@]+$/.test(email)||!['member','admin'].includes(role))return res.status(400).json({error:'A valid email and role are required.'});
- const redirectTo=`${(process.env.SITE_URL||'https://anviltools.vercel.app').replace(/\/$/,'')}/admin-panel/login.html`;
+ const origin=req.get('Origin');
+ const inviteSite=origin&&allowedOrigins.includes(origin)?origin:(process.env.SITE_URL||'https://anviltools.vercel.app');
+ const redirectTo=`${inviteSite.replace(/\/$/,'')}/admin-panel/login.html`;
  const {data,error}=await db.auth.admin.inviteUserByEmail(email.trim().toLowerCase(),{redirectTo});
  if(error)return res.status(400).json({error:'Could not invite this email. It may already be registered; use the user list to manage existing accounts.'});
  unwrap(await db.from('audit_logs').insert({actor_id:req.user.id,action:'user.invited',target:data.user.id,details:{role}}));
@@ -37,8 +40,10 @@ router.post('/documents',run(async(req,res)=>{
  if(p.cover_image_id){const image=unwrap(await db.from('media_assets').select('id').eq('id',p.cover_image_id).maybeSingle());if(!image)return res.status(400).json({error:'Select an uploaded image from the media library.'});}
  if(p.status==='published'&&p.cover_image_id&&!p.cover_alt.trim())return res.status(400).json({error:'Describe the cover image with alt text before publishing.'});
  if(p.status==='published'&&!p.body.trim())return res.status(400).json({error:'Add article content before publishing.'});
+ if(p.category_slug){const category=unwrap(await db.from('categories').select('slug').eq('slug',p.category_slug).maybeSingle());if(!category)return res.status(400).json({error:'Select an existing category.'});}
  const result=await db.rpc('save_post_document',{document:{id:p.id,slug:p.slug,title:p.title.trim(),excerpt:p.excerpt,body:p.body,status:p.status,category_slug:p.category_slug,seo_title:p.seo_title,seo_description:p.seo_description,cover_image_id:p.cover_image_id,cover_alt:p.cover_alt.trim(),tags:[...new Set(p.tags.map(tag=>tag.trim()))]},actor:req.user.id});
  if(result.error?.code==='23505')return res.status(409).json({error:'That article slug is already in use.'});
+ if(result.error?.code==='23503')return res.status(400).json({error:'A referenced category, image, or user no longer exists. Reload and try again.'});
  res.json({ok:true,post:unwrap(result)});
 }));
 router.get('/documents/:id/revisions',run(async(req,res)=>{

@@ -1,10 +1,12 @@
-﻿# Supabase workspace setup
+# Supabase workspace setup
+
+> Production project `epxzxcqsonxscyvbopqt` is already migrated. Do not run the numbered migrations, full-schema.sql, seed.sql, or `supabase db push` against it. See [Production integration](PRODUCTION_INTEGRATION.md) for the deployed contract and remaining setup.
 
 ## 1. Database
 
 For a NEW Supabase project, run **supabase/full-schema.sql** once in the SQL Editor. It includes migrations 001–005 and the starter catalog in one transaction.
 
-For an EXISTING installation, run only missing files in **supabase/migrations/** in numeric order; do not replace your existing database. Migration 004 backfills existing Auth users with member profiles and preserves existing posts/tools/contact records.
+Only for an existing installation created from these same numbered scripts, run missing files in **supabase/migrations/** in numeric order; do not replace your existing database. Migration 004 backfills existing Auth users with member profiles and preserves existing posts/tools/contact records.
 
 Tables cover tool catalog/counters; complete blog articles with SEO fields, categories and revisions; user profiles and roles; contact requests and SMTP job logs; audit events; daily aggregate analytics; site settings; page drafts; media metadata; temporary inbox capabilities; and shared rate limiting. The editor accepts JPEG/PNG/WebP uploads up to 3 MB and 24 megapixels. The server decodes images, removes metadata, and resizes them to at most 2000 pixels as WebP. Images are stored in the private editorial-media bucket; the media library uses temporary signed previews. Only covers attached to published posts are served publicly. Migration 005 adds cover references, alt text, tags, and image dimensions. A generic legal-page editor is not included.
 
@@ -50,7 +52,7 @@ supabase functions deploy maintenance
 
 The supplied supabase/config.toml disables the gateway JWT check per function, because the private functions validate the bearer token themselves with Auth getUser and check the database role. **Never remove those checks.** published-posts is deliberately public and returns published article fields only.
 
-In Edge Function secrets set FRONTEND_ORIGINS=https://anviltools.vercel.app, BACKEND_URL=https://anvil-tools-backend.vercel.app, and ADMIN_EMAILS matching the backend. Supabase supplies SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the Edge environment; do not expose the latter. Edge Functions do not require Gmail credentials; SMTP stays on Vercel.
+Only if browsers call the optional Edge Functions directly, configure their CORS separately. In Edge Function secrets set FRONTEND_ORIGINS=https://anviltools.vercel.app, BACKEND_URL=https://anvil-tools-backend.vercel.app, and ADMIN_EMAILS matching the backend. Supabase supplies SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the Edge environment; do not expose the latter. Edge Functions do not require Gmail credentials; SMTP stays on Vercel.
 
 - **workspace-api**: optional authenticated gateway. Call `/functions/v1/workspace-api?path=/api/admin/users` with `Authorization: Bearer <user access token>`. It forwards only approved admin paths to Vercel; both layers check access. The current frontend calls Vercel directly until you choose to use this gateway.
 - **published-posts**: GET `/functions/v1/published-posts` or `?slug=article-slug`; drafts and private author data are never returned. The frontend also has equivalent Vercel public article endpoints.

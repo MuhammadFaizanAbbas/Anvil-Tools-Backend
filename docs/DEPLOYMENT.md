@@ -1,5 +1,7 @@
 # Vercel + cPanel + Supabase
 
+> Production project `epxzxcqsonxscyvbopqt` is already migrated. Do not run the numbered migrations, full-schema.sql, seed.sql, or `supabase db push` against it. See [Production integration](PRODUCTION_INTEGRATION.md) for the deployed contract and remaining setup.
+
 ## 1. Supabase
 
 Create a Supabase project, then run these files in its SQL Editor in order:

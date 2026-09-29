@@ -1,4 +1,6 @@
-﻿# Contact inbox and SMTP setup
+# Contact inbox and SMTP setup
+
+> Production project `epxzxcqsonxscyvbopqt` is already migrated. Do not run the numbered migrations, full-schema.sql, seed.sql, or `supabase db push` against it. See [Production integration](PRODUCTION_INTEGRATION.md) for the deployed contract and remaining setup.
 
 1. In Supabase SQL Editor run `supabase/migrations/003_contact_inbox.sql` after migrations 001 and 002. This creates private contact and outbound-email tables plus the atomic submission function. Browser roles cannot read them.
 2. In the **backend** Vercel project's Production environment, set `SMTP_HOST`, `SMTP_PORT` (587 or 465), `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM=info@velloxtech.com` (or a sender address authorized by your SMTP provider). Configure SPF/DKIM with your provider for that sender domain. Port 465 uses implicit TLS; 587 requires STARTTLS with certificate verification. Never place SMTP credentials in frontend files or GitHub.

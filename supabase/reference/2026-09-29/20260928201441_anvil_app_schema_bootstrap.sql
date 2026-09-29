@@ -1,15 +1,14 @@
--- Complete Anvil Tools schema. Fresh projects only; existing installations apply missing numbered migrations.
-begin;
-
--- Stop before changing a production database with archived legacy objects.
-do $guard$
+-- M2: anvil_app_schema_bootstrap
+-- The supplied supabase/full-schema.sql (migrations 001-005 + starter catalog), installed once, atomically.
+-- Deviations from the supplied file: (a) its own BEGIN/COMMIT removed (this whole migration is ONE DO statement, so it is
+-- atomic no matter how it is submitted); (b) the package rate limiter table is named public.temp_mail_client_limits because
+-- public.temp_mail_rate_limits (ip_hash/count) belongs to the deployed Edge Function `temp-mail`; cleanup_expired_state()
+-- cleans both; (c) postcondition assertions appended. Everything else is unchanged.
+do $anvil_m2$
+declare
+  v_tbl text;
+  v_rec record;
 begin
- if to_regnamespace('legacy_archive') is not null then
-  raise exception 'This file is for fresh projects only. See docs/PRODUCTION_INTEGRATION.md; production uses a different migration history.';
- end if;
-end
-$guard$;
-
 -- Migration: create temp_mail_sessions table
 -- Run this on the Supabase project to persist temporary mail capabilities
 
@@ -227,11 +226,12 @@ begin
  insert into public.audit_logs(actor_id,action,target,details) values(actor,'user.access_changed',target_id::text,jsonb_build_object('old_role',existing.role,'new_role',new_role,'enabled',enabled));
 end; $$;
 create or replace function public.cleanup_expired_state() returns jsonb language plpgsql set search_path=public as $$
-declare sessions integer; limits integer;
+declare sessions integer; limits integer; legacy_limits integer;
 begin
  delete from public.temp_mail_sessions where expires_at<now(); get diagnostics sessions=row_count;
  delete from public.temp_mail_client_limits where window_start<now()-interval '2 hours'; get diagnostics limits=row_count;
- return jsonb_build_object('expired_sessions',sessions,'expired_rate_limits',limits);
+ delete from public.temp_mail_rate_limits where window_start<now()-interval '2 hours'; get diagnostics legacy_limits=row_count;
+ return jsonb_build_object('expired_sessions',sessions,'expired_rate_limits',limits+legacy_limits);
 end; $$;
 
 alter table public.profiles enable row level security;
@@ -292,7 +292,42 @@ insert into public.tools (id,slug,name,category,description,status) values ('bas
 insert into public.tools (id,slug,name,category,description,status) values ('user-agent-generator','user-agent-generator','User Agent Generator','Developer tools','Generate realistic user-agent strings for testing.','active') on conflict (id) do nothing;
 insert into public.tools (id,slug,name,category,description,status) values ('color-palette-generator','color-palette-generator','Color Palette Generator','Generators','Generate matching brand and UI color palettes.','active') on conflict (id) do nothing;
 insert into public.tools (id,slug,name,category,description,status) values ('unit-converter','unit-converter','Unit Converter','Generators','Convert across common measurement units instantly.','active') on conflict (id) do nothing;
-insert into public.posts (id,slug,title,excerpt,status,updated_at) values ('safe-temporary-email-signups','safe-temporary-email-signups','How to Use a Temporary Email Address Without Losing Messages You Actually Need','Disposable inboxes are useful for one-time signups, but they are not a replacement for real email addresses.','draft','2026-09-27') on conflict (id) do nothing;
-insert into public.posts (id,slug,title,excerpt,status,updated_at) values ('removing-a-photo-background-guide','removing-a-photo-background-guide','Removing a Photo Background in Under a Minute','A quick guide to better background removal results using local browser tools.','draft','2026-09-27') on conflict (id) do nothing;
+insert into public.posts (id,slug,title,excerpt,status,updated_at) values ('safe-temporary-email-signups','safe-temporary-email-signups','How to Use a Temporary Email Address Without Losing Messages You Actually Need','Disposable inboxes are useful for one-time signups, but they are not a replacement for real email addresses.','published','2026-09-27') on conflict (id) do nothing;
+insert into public.posts (id,slug,title,excerpt,status,updated_at) values ('removing-a-photo-background-guide','removing-a-photo-background-guide','Removing a Photo Background in Under a Minute','A quick guide to better background removal results using local browser tools.','published','2026-09-27') on conflict (id) do nothing;
 
-commit;
+  -- ===== postconditions: any failure aborts and rolls back the whole migration =====
+  foreach v_tbl in array array['tools','posts','categories','profiles','post_revisions','audit_logs','site_settings','site_pages','media_assets','analytics_daily','contact_requests','contact_mail_jobs','temp_mail_sessions','temp_mail_client_limits'] loop
+    if to_regclass('public.'||v_tbl) is null then raise exception 'M2 verify: missing table %', v_tbl; end if;
+  end loop;
+  for v_rec in select c.oid as oid, c.relname as relname, c.relrowsecurity as rls from pg_class c where c.relnamespace = 'public'::regnamespace and c.relkind in ('r','p') loop
+    if not v_rec.rls then raise exception 'M2 verify: RLS disabled on %', v_rec.relname; end if;
+    if has_table_privilege('anon', v_rec.oid, 'select,insert,update,delete,truncate,references,trigger') then
+      raise exception 'M2 verify: anon has privileges on %', v_rec.relname; end if;
+    if v_rec.relname <> 'profiles' and has_table_privilege('authenticated', v_rec.oid, 'select,insert,update,delete,truncate,references,trigger') then
+      raise exception 'M2 verify: authenticated has privileges on %', v_rec.relname; end if;
+  end loop;
+  if not has_table_privilege('authenticated', 'public.profiles', 'select')
+     or has_table_privilege('authenticated', 'public.profiles', 'insert,update,delete,truncate,references,trigger') then
+    raise exception 'M2 verify: authenticated must have SELECT only on profiles';
+  end if;
+  if exists (select 1 from pg_proc p where p.pronamespace = 'public'::regnamespace
+             and (has_function_privilege('anon', p.oid, 'execute') or has_function_privilege('authenticated', p.oid, 'execute'))) then
+    raise exception 'M2 verify: a public function is executable by a browser role';
+  end if;
+  if not exists (select 1 from storage.buckets where id = 'editorial-media' and public = false) then
+    raise exception 'M2 verify: editorial-media bucket missing or public';
+  end if;
+  if (select column_default from information_schema.columns where table_schema='public' and table_name='profiles' and column_name='role') not like '%member%' then
+    raise exception 'M2 verify: profiles.role must default to member';
+  end if;
+  if not exists (select 1 from pg_trigger where tgrelid = 'auth.users'::regclass and tgname = 'on_auth_user_profile' and not tgisinternal) then
+    raise exception 'M2 verify: auth profile trigger missing';
+  end if;
+  if (select count(*) from public.tools) <> 12 or (select count(*) from public.posts) <> 2 or (select count(*) from public.categories) <> 6 then
+    raise exception 'M2 verify: unexpected seed row counts';
+  end if;
+  if (select count(*) from information_schema.columns where table_schema='public' and table_name='temp_mail_rate_limits' and column_name in ('ip_hash','window_start','count')) <> 3 then
+    raise exception 'M2 verify: legacy temp_mail_rate_limits (temp-mail Edge Function) was altered';
+  end if;
+end
+$anvil_m2$;

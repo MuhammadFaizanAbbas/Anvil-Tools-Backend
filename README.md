@@ -1,5 +1,7 @@
 # Anvil Tools API
 
+> Production project `epxzxcqsonxscyvbopqt` is already migrated. Do not run repository SQL or supabase db push against it. See [Production integration](docs/PRODUCTION_INTEGRATION.md).
+
 Deploy this repository root to Vercel as Express, with default build/output settings.
 
 Configure SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAILS, and FRONTEND_ORIGINS=https://anviltools.vercel.app in Vercel Production. Redeploy after setting them. Never commit secrets.

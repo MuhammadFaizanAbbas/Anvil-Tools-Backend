@@ -1,4 +1,13 @@
-﻿-- Run after 003. Server-owned roles, full editorial records, and configuration.
+-- Stop before changing a production database with archived legacy objects.
+do $guard$
+begin
+ if to_regnamespace('legacy_archive') is not null then
+  raise exception 'This file is for fresh projects only. See docs/PRODUCTION_INTEGRATION.md; production uses a different migration history.';
+ end if;
+end
+$guard$;
+
+-- Run after 003. Server-owned roles, full editorial records, and configuration.
 create table if not exists public.profiles (
  id uuid primary key references auth.users(id) on delete cascade,
  email text not null,
@@ -91,7 +100,7 @@ create or replace function public.cleanup_expired_state() returns jsonb language
 declare sessions integer; limits integer;
 begin
  delete from public.temp_mail_sessions where expires_at<now(); get diagnostics sessions=row_count;
- delete from public.temp_mail_rate_limits where window_start<now()-interval '2 hours'; get diagnostics limits=row_count;
+ delete from public.temp_mail_client_limits where window_start<now()-interval '2 hours'; get diagnostics limits=row_count;
  return jsonb_build_object('expired_sessions',sessions,'expired_rate_limits',limits);
 end; $$;
 

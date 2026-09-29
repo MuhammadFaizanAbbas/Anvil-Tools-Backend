@@ -9,19 +9,22 @@ router.use(requireAdmin);
 router.get('/users',run(async(req,res)=>{
  const page=Math.max(0,parseInt(req.query.page,10)||0);
  const result=await db.from('profiles').select('*',{count:'exact'}).order('created_at',{ascending:false}).range(page*25,page*25+24);
- res.json({items:unwrap(result).map(user=>({...user,role:isOwner(user)?'owner':user.role,protected:isOwner(user)||user.role==='owner'||user.id===req.user.id})),total:result.count,page});
+ const items=await Promise.all(unwrap(result).map(async user=>{const auth=db.auth.admin?.getUserById?await db.auth.admin.getUserById(user.id):null;return {...user,password_pending:!!auth?.data?.user?.app_metadata?.password_setup_required,role:isOwner(user)?'owner':user.role,protected:isOwner(user)||user.role==='owner'||user.id===req.user.id};}));
+ res.json({items,total:result.count,page});
+}));
+router.post('/users/:id/resend',run(async(req,res)=>{
+ if(!validId(req.params.id))return res.status(400).json({error:'Invalid user'});
+ const auth=await db.auth.admin.getUserById(req.params.id);
+ if(auth.error||!auth.data.user)return res.status(404).json({error:'User not found'});
+ const user=auth.data.user;
+ if(!user.app_metadata?.password_setup_required)return res.status(409).json({error:'Password is already set. Use password recovery instead.'});
+ res.json(await require('../lib/invitations').invite(user.email,'member',req.user.id,req.get('Origin'),user));
 }));
 router.post('/users',run(async(req,res)=>{
  const {email,role='member'}=req.body||{};
  if(typeof email!=='string'||email.length>254||!/^\S+@[^\s@]+\.[^\s@]+$/.test(email)||!['member','admin'].includes(role))return res.status(400).json({error:'A valid email and role are required.'});
- const origin=req.get('Origin');
- const inviteSite=origin&&allowedOrigins.includes(origin)?origin:(process.env.SITE_URL||'https://anviltools.vercel.app');
- const redirectTo=`${inviteSite.replace(/\/$/,'')}/admin-panel/login.html`;
- const {data,error}=await db.auth.admin.inviteUserByEmail(email.trim().toLowerCase(),{redirectTo});
- if(error)return res.status(400).json({error:'Could not invite this email. It may already be registered; use the user list to manage existing accounts.'});
- unwrap(await db.from('audit_logs').insert({actor_id:req.user.id,action:'user.invited',target:data.user.id,details:{role}}));
- if(role==='admin') unwrap(await db.rpc('change_user_access',{target_id:data.user.id,new_role:'admin',enabled:true,actor:req.user.id}));
- res.status(201).json({ok:true,message:'Invitation sent. The user can sign in with Google using the same email.'});
+ const result=await require('../lib/invitations').invite(email.trim().toLowerCase(),role,req.user.id,req.get('Origin'));
+ res.status(201).json(result);
 }));
 router.put('/users/:id',run(async(req,res)=>{
  const {role,is_active}=req.body||{};

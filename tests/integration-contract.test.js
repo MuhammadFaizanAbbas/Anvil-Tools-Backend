@@ -8,7 +8,7 @@ let allowed = true, saved = [], invites = [], rpcCalls = [], rpcError = null;
 const db = {
   auth: {
     getUser: async () => ({ data: { user: { id: 'owner', email: 'owner@example.com', email_confirmed_at: '2026-01-01' } } }),
-    admin: { inviteUserByEmail: async (email, options) => { invites.push(options); return { data: { user: { id: 'invited' } } }; } },
+    admin: { generateLink: async () => ({ data: { user: { id: 'invited' }, properties: { hashed_token: 'single-use-test' } } }), updateUserById: async () => ({data:{}}) },
   },
   from(table) {
     let filter, row;
@@ -23,6 +23,7 @@ const db = {
 };
 const cp = require.resolve('../backend/src/lib/supabase');
 require.cache[cp] = { id: cp, filename: cp, loaded: true, exports: { supabaseAdmin: db, requireDatabase: (req, res, next) => next() } };
+const mailPath=require.resolve('../backend/src/lib/contact-mail');require.cache[mailPath]={id:mailPath,filename:mailPath,loaded:true,exports:{transport:()=>({sendMail:async message=>{invites.push(message);return {accepted:['new@example.com']};}})}};
 const app = require('../backend/src/app');
 let server, base;
 before(async () => { server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -55,9 +56,9 @@ test('analytics ignores spoofed forwarded-for and fails closed without the Verce
 test('invites return to an allowed requesting domain, default for server calls, and reject other origins', async () => {
   invites = [];
   assert.equal((await post('/api/admin/users', { email: 'new@example.com' }, { Origin: 'https://two.example' })).status, 201);
-  assert.equal(invites[0].redirectTo, 'https://two.example/admin-panel/login.html');
+  assert.match(invites[0].text, /https:\/\/two\.example\/admin-panel\/setup-password\.html#token_hash=/);
   assert.equal((await post('/api/admin/users', { email: 'new@example.com' })).status, 201);
-  assert.equal(invites[1].redirectTo, 'https://one.example/admin-panel/login.html');
+  assert.match(invites[1].text, /https:\/\/one\.example\/admin-panel\/setup-password\.html#token_hash=/);
   assert.equal((await post('/api/admin/users', { email: 'new@example.com' }, { Origin: 'https://evil.example' })).status, 403);
   assert.equal(invites.length, 2);
 });

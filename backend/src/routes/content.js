@@ -69,7 +69,9 @@ router.post('/analytics/event', run(async (req, res) => {
   res.json({ ok: true, tool });
 }));
 router.get('/public/posts', run(async (req, res) => {
-  res.json(unwrap(await db.from('posts').select('slug,title,excerpt,published_at,category_slug,cover_image_id,cover_alt,tags').eq('status','published').order('published_at',{ascending:false}).limit(100)));
+  const limit=Number(req.query.limit ?? 100),offset=Number(req.query.offset ?? 0);
+  if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||offset>1000000)return res.status(400).json({error:'Invalid article pagination'});
+  res.json(unwrap(await db.from('posts').select('slug,title,excerpt,published_at,category_slug,cover_image_id,cover_alt,tags').eq('status','published').order('published_at',{ascending:false,nullsFirst:false}).order('slug').range(offset,offset+limit-1)));
 }));
 router.get('/public/posts/:slug', run(async (req,res) => {
   const post=unwrap(await db.from('posts').select('slug,title,excerpt,body,published_at,seo_title,seo_description,cover_image_id,cover_alt,tags').eq('slug',req.params.slug).eq('status','published').maybeSingle());

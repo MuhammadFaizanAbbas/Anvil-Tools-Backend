@@ -10,7 +10,7 @@ Create a Supabase project, then run these files in its SQL Editor in order:
 2. `supabase/migrations/002_app_schema.sql`
 3. `supabase/seed.sql`
 
-The seed adds the existing tool catalog and two existing dashboard post records without replacing existing rows. Demo traffic counts are not imported. All app tables have Row Level Security enabled and access revoked from browser roles; the API uses its server-only service-role key. Rate limiting uses an atomic database function shared across Vercel instances. Expired temporary sessions and rate-limit rows are removed during new inbox requests; there is no persistent worker. Provider mailbox retention remains controlled by mail.tm.
+The seed adds the existing tool catalog and two existing dashboard post records without replacing existing rows. Demo traffic counts are not imported. All app tables have Row Level Security enabled and access revoked from browser roles; the API uses its server-only service-role key. Rate limiting uses an atomic database function shared across Vercel instances. Expired temporary sessions and rate-limit rows are removed during new inbox requests; there is no persistent worker. Provider mailbox retention remains controlled by Guerrilla Mail.
 
 Create an admin user under Authentication > Users and set its password. Add its email to `ADMIN_EMAILS`. A valid Supabase account alone does not grant admin access. Disable public signups if your project only needs invited administrators.
 
@@ -79,7 +79,7 @@ Open `/admin-panel/login.html` to sign in. `/admin` and `/admin/login` redirect 
 - Open the homepage, a tool page and blog pages on the cPanel domain.
 - Sign in with the allowed Supabase admin and edit a tool name. Reload to confirm persistence.
 - Confirm an ordinary Supabase user cannot use admin endpoints.
-- Create a temporary inbox, list messages, and delete it. The mail.tm provider must be reachable; five create attempts per client IP per hour are allowed.
+- Create a temporary inbox, list messages, open a message, and switch to a new inbox. Guerrilla Mail must be reachable. The API uses `consume_inbox_creation_limit` when installed and falls back to the existing `consume_temp_mail_limit` RPC on the current production schema.
 - Confirm browser requests target Vercel and have no CORS errors.
 - Replace `www.example.com`, contact email and publisher placeholders in static files before launch.
 

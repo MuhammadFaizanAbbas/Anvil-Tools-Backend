@@ -34,4 +34,4 @@ async function deliverInitial(contactId) {
   const jobs = unwrap(await db.from('contact_mail_jobs').select('*').eq('contact_id', contactId).eq('status', 'queued').in('kind', ['alert', 'receipt']));
   await Promise.all(jobs.map(deliver));
 }
-module.exports = { deliver, deliverInitial };
+module.exports = { deliver, deliverInitial, transport };

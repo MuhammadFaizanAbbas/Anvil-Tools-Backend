@@ -15,7 +15,15 @@ router.get('/post-images/:id',run(async(req,res)=>{
  const asset=unwrap(await db.from('media_assets').select('storage_path,mime_type').eq('id',req.params.id).maybeSingle());
  if(!asset)return res.sendStatus(404);
  const blob=unwrap(await db.storage.from('editorial-media').download(asset.storage_path));
- res.removeHeader('X-Robots-Tag');res.set('X-Content-Type-Options','nosniff');res.set('Cache-Control','no-store');res.type('image/webp').send(Buffer.from(await blob.arrayBuffer()));
+ const normalize=value=>String(value||'').split(';')[0].trim().toLowerCase().replace(/^image\/jpg$/,'image/jpeg');
+ const supported=new Set(['image/svg+xml','image/png','image/jpeg','image/webp','image/gif','image/avif','image/bmp','image/x-icon']);
+ const extension=asset.storage_path.split('.').pop().toLowerCase();
+ const inferred={svg:'image/svg+xml',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif',avif:'image/avif',bmp:'image/bmp',ico:'image/x-icon'}[extension];
+ const mime=[normalize(asset.mime_type),normalize(blob.type),inferred].find(type=>supported.has(type));
+ if(!mime)return res.status(415).json({error:'Unsupported image type'});
+ res.removeHeader('X-Robots-Tag');res.set('X-Content-Type-Options','nosniff');res.set('Cache-Control','no-store');
+ if(mime==='image/svg+xml')res.set('Content-Security-Policy',"sandbox; default-src 'none'; style-src 'unsafe-inline'");
+ res.type(mime).send(Buffer.from(await blob.arrayBuffer()));
 }));
 router.get('/sitemap.xml',run(async(req,res)=>{
  const posts=unwrap(await db.from('posts').select('slug,updated_at').eq('status','published').order('updated_at',{ascending:false}).limit(10000));

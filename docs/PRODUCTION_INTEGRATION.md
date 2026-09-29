@@ -35,3 +35,24 @@ Run `npm test` locally. `node scripts/check-live-integration.js` performs read-o
 Read-only checks before deployment found: health 200 with databaseConfigured=true; tools 200 with 12 records; unauthenticated admin/me 401; public posts 200 with two records; auth/config 200 with the expected website CORS header. Supabase Auth settings returned **external.google=false** and external.email=true. Adding redirect URLs alone has not enabled Google. Owner login, member rejection with a real session, SMTP, and media upload still need end-to-end verification.
 
 The supplied rollback remains in Downloads and was not executed or added to the migration path. The stronger guard is not a reason to roll back this deployment.
+
+## Blog and image fixes prepared locally
+
+A later read-only check found 100 articles returned by the public feed. A cover request returned SVG bytes with `Content-Type: image/webp`, confirming the broken-image cause.
+
+- `backend/src/routes/articles.js` now serves the stored image MIME type, with Storage metadata/file-extension fallbacks for legacy records. SVG, PNG, JPEG, WebP, GIF, AVIF, BMP and ICO are supported. SVG responses have a restrictive CSP, and unpublished covers remain private. Admin PNG/JPEG uploads still use the existing WebP optimization.
+- `backend/src/routes/content.js` accepts `limit` (1–100) and `offset` for the published feed, with stable ordering.
+- `frontend/blog/index.html` and `frontend/assets/js/published-posts.js` show uploaded and existing static guides in one card grid. The feed loads 12 articles at a time, supports retries, and includes published posts with no publication date. The older query-string article page now includes its cover.
+
+Deploy the backend changes first, then the frontend changes. No database migration or article re-upload is required. Regression tests cover actual SVG/PNG/JPEG/WebP responses, draft privacy, pagination beyond 100 records, frontend retries and cover rendering.
+
+## Temporary inbox fix
+
+The production create endpoint returned HTTP 503 while the old mail.tm integration was deployed. The replacement uses Guerrilla Mail and keeps its session token and cookie on the server. A direct provider check created an inbox and returned its welcome message.
+
+- Inbox creation uses `consume_inbox_creation_limit` when available and falls back to production's existing `consume_temp_mail_limit`, so this release does not require a database migration.
+- The browser restores an active inbox after reload, checks every 15 seconds, supports manual refresh, and preserves the current inbox if creating a replacement fails.
+- Late responses from an abandoned inbox cannot overwrite the new inbox. Expired or mismatched provider sessions are cleared.
+- Subjects and senders are decoded for display. Message bodies render as text; HTML scripts and styles are removed server-side and no provider HTML is inserted into the page.
+
+Automated API tests cover provider failure, session privacy, limiter compatibility, malformed responses, expiration, text and HTML messages, and cleanup after storage failure. Headless browser checks cover loading, safe display, switching races, failed replacement, reload, expiry and the mobile layout.

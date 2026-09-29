@@ -6,6 +6,7 @@ module.exports = (req, res, next) => {
   if (origin) res.set('Access-Control-Allow-Origin', origin);
   res.set('Access-Control-Allow-Methods', 'GET,POST,PUT,OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.set('Access-Control-Expose-Headers', 'Retry-After');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 };

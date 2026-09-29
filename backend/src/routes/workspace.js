@@ -9,22 +9,19 @@ router.use(requireAdmin);
 router.get('/users',run(async(req,res)=>{
  const page=Math.max(0,parseInt(req.query.page,10)||0);
  const result=await db.from('profiles').select('*',{count:'exact'}).order('created_at',{ascending:false}).range(page*25,page*25+24);
- const items=await Promise.all(unwrap(result).map(async user=>{const auth=db.auth.admin?.getUserById?await db.auth.admin.getUserById(user.id):null;return {...user,password_pending:!!auth?.data?.user?.app_metadata?.password_setup_required,role:isOwner(user)?'owner':user.role,protected:isOwner(user)||user.role==='owner'||user.id===req.user.id};}));
+ const items=unwrap(result).map(user=>({...user,role:isOwner(user)?'owner':user.role,protected:isOwner(user)||user.role==='owner'||user.id===req.user.id}));
  res.json({items,total:result.count,page});
 }));
-router.post('/users/:id/resend',run(async(req,res)=>{
- if(!validId(req.params.id))return res.status(400).json({error:'Invalid user'});
- const auth=await db.auth.admin.getUserById(req.params.id);
- if(auth.error||!auth.data.user)return res.status(404).json({error:'User not found'});
- const user=auth.data.user;
- if(!user.app_metadata?.password_setup_required)return res.status(409).json({error:'Password is already set. Use password recovery instead.'});
- res.json(await require('../lib/invitations').invite(user.email,'member',req.user.id,req.get('Origin'),user));
-}));
 router.post('/users',run(async(req,res)=>{
- const {email,role='member'}=req.body||{};
- if(typeof email!=='string'||email.length>254||!/^\S+@[^\s@]+\.[^\s@]+$/.test(email)||!['member','admin'].includes(role))return res.status(400).json({error:'A valid email and role are required.'});
- const result=await require('../lib/invitations').invite(email.trim().toLowerCase(),role,req.user.id,req.get('Origin'));
- res.status(201).json(result);
+ const {email,password,role='admin'}=req.body||{};
+ if(typeof email!=='string'||email.length>254||!/^\S+@[^\s@]+\.[^\s@]+$/.test(email)||typeof password!=='string'||password.length<12||password.length>128||!['member','admin'].includes(role))return res.status(400).json({error:'Enter a valid email, a password from 12 to 128 characters, and an access role.'});
+ const created=await db.auth.admin.createUser({email:email.trim().toLowerCase(),password,email_confirm:true});
+ if(created.error?.status===422||created.error?.code==='email_exists'||created.error?.code==='user_already_exists')return res.status(409).json({error:'An account already exists for that email.'});
+ const user=unwrap(created);
+ try{
+  if(role==='admin')unwrap(await db.rpc('change_user_access',{target_id:user.user.id,new_role:'admin',enabled:true,actor:req.user.id}));
+ }catch(error){await db.auth.admin.deleteUser(user.user.id);throw error;}
+ res.status(201).json({ok:true,message:'Account created. The user can sign in with the email and password you set.'});
 }));
 router.put('/users/:id',run(async(req,res)=>{
  const {role,is_active}=req.body||{};
@@ -59,6 +56,6 @@ router.put('/categories/:slug',run(async(req,res)=>{
  unwrap(await db.from('categories').upsert({slug:req.params.slug,name:name.trim(),description}));res.json({ok:true});
 }));
 router.get('/audit',run(async(req,res)=>{res.json(unwrap(await db.from('audit_logs').select('*').order('created_at',{ascending:false}).limit(100)));}));
-router.get('/system',run(async(req,res)=>{res.json({databaseConfigured:true,smtpConfigured:!!(process.env.SMTP_HOST&&process.env.SMTP_USER&&process.env.SMTP_PASS&&process.env.SMTP_FROM),googleSetup:'Enable the Google provider and redirect URL in Supabase Auth.',settings:unwrap(await db.from('site_settings').select('*'))});}));
+router.get('/system',run(async(req,res)=>{res.json({databaseConfigured:true,smtpConfigured:!!(process.env.SMTP_HOST&&process.env.SMTP_USER&&process.env.SMTP_PASS&&process.env.SMTP_FROM),authentication:'Email and password. Google sign-in is intentionally disabled.',settings:unwrap(await db.from('site_settings').select('*'))});}));
 router.get('/analytics/daily',run(async(req,res)=>{const since=new Date(Date.now()-30*86400000).toISOString().slice(0,10);res.json(unwrap(await db.from('analytics_daily').select('*').gte('day',since).order('day')));}));
 module.exports=router;

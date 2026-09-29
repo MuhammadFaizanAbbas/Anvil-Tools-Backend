@@ -50,10 +50,10 @@ test('missing new limiter uses the production limiter while database failures st
  failure='';
 });
 test('messages use the original provider session and tolerate missing timestamps',async()=>{
- mailList=[{mail_id:42,mail_subject:'New &amp; ready',mail_from:'sender@example.test'}];
+ mailList=[{mail_id:1,mail_subject:'Welcome to Guerrilla Mail',mail_from:'no-reply@guerrillamail.com'},{mail_id:42,mail_subject:'New &amp; ready',mail_from:'sender@example.test'}];
  const response=await originalFetch(base+'/messages?cap='+session.capability);
  assert.equal(response.status,200);
- const data=await response.json();assert.equal(data.messages[0].id,'42');assert.equal(data.messages[0].createdAt,null);
+ const data=await response.json();assert.equal(data.messages.length,1);assert.equal(data.messages[0].id,'42');assert.equal(data.messages[0].createdAt,null);
  assert.equal(lastProvider.url.searchParams.get('sid_token'),'private-token');
  assert.doesNotMatch(JSON.stringify(data),/private-token/);
 });
@@ -63,7 +63,11 @@ test('message details retain plain text and remove HTML without losing line brea
  assert.equal(response.status,200);assert.equal((await response.json()).text,mailDetail.mail_body);
  mailDetail={mail_id:42,mail_body:'<p>Code &amp; link</p><script>bad()</script><p>123456</p>',content_type:'text/html'};
  response=await originalFetch(base+'/messages/42?cap='+session.capability);
- const data=await response.json();assert.equal(data.text,'Code &amp; link\n123456\n');assert.equal(data.textEncoded,true);
+ const data=await response.json();assert.equal(data.text,'Code & link\n123456\n');assert.equal(data.textEncoded,true);
+});
+test('provider welcome message cannot be opened directly',async()=>{
+ mailDetail={mail_id:1,mail_from:'no-reply@guerrillamail.com',mail_subject:'Welcome to Guerrilla Mail',mail_body:'Provider introduction',content_type:'text'};
+ assert.equal((await originalFetch(base+'/messages/1?cap='+session.capability)).status,404);
 });
 test('invalid provider data is an error and changed inbox identities expire',async()=>{
  failure='malformed';assert.equal((await originalFetch(base+'/messages?cap='+session.capability)).status,503);

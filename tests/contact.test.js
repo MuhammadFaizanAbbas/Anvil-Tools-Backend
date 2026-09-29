@@ -60,7 +60,7 @@ test('contact validates input and rate limits before storage or SMTP',async()=>{
 test('contact logs both emails and duplicate request IDs do not resend',async()=>{
   const p=payload();assert.equal((await post('/api/contact',p)).status,202);
   const own=jobs.filter(j=>j.contact_id===p.id);assert.equal(own.length,2);assert.ok(own.every(j=>j.status==='sent'));
-  assert.ok(sent.some(m=>m.to.address==='faizan@velloxtech.com'));assert.ok(sent.some(m=>m.to.address===p.email));
+  assert.ok(sent.some(m=>m.to.address==='faizan@velloxtech.com'));assert.ok(sent.some(m=>m.to.address===p.email));assert.ok(sent.every(m=>m.html.includes('Anvil Tools')&&m.html.includes('<!doctype html>')));
   const count=sent.length;await post('/api/contact',p);assert.equal(sent.length,count);
 });
 test('failed SMTP preserves contact and supports authenticated retry only',async()=>{

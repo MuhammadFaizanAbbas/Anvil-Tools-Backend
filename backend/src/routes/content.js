@@ -26,7 +26,16 @@ router.put('/tools/:slug', requireAdmin, run(async (req, res) => {
   res.json({ ok: true, tool });
 }));
 router.get('/posts', requireAdmin, run(async (req, res) => {
-  res.json(unwrap(await db.from('posts').select('*').order('updated_at', { ascending: false })).map(postShape));
+  if (req.query.limit === undefined && req.query.offset === undefined) {
+    return res.json(unwrap(await db.from('posts').select('*').order('updated_at', { ascending: false, nullsFirst: false }).order('id')).map(postShape));
+  }
+  const limit = Number(req.query.limit ?? 10), offset = Number(req.query.offset ?? 0);
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100 || !Number.isSafeInteger(offset) || offset < 0 || offset > 1000000) {
+    return res.status(400).json({ error: 'Invalid post pagination' });
+  }
+  const result = await db.from('posts').select('*', { count: 'exact' })
+    .order('updated_at', { ascending: false, nullsFirst: false }).order('id').range(offset, offset + limit - 1);
+  res.json({ items: unwrap(result).map(postShape), total: result.count || 0, limit, offset });
 }));
 router.post('/posts', requireAdmin, run(async (req, res) => {
   const { title, slug, excerpt = '', status = 'draft' } = req.body || {};
@@ -41,13 +50,16 @@ router.post('/posts', requireAdmin, run(async (req, res) => {
   res.status(201).json({ ok: true, post: postShape(unwrap(result)) });
 }));
 router.get('/site/overview', requireAdmin, run(async (req, res) => {
-  const [toolResult, postResult] = await Promise.all([
+  const [toolResult, postResult, publishedResult, draftResult] = await Promise.all([
     db.from('tools').select('name,views').order('views', { ascending: false }),
     db.from('posts').select('id', { count: 'exact', head: true }),
+    db.from('posts').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+    db.from('posts').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
   ]);
   const tools = unwrap(toolResult);
-  unwrap(postResult);
+  unwrap(postResult); unwrap(publishedResult); unwrap(draftResult);
   res.json({ totalTools: tools.length, totalPosts: postResult.count,
+    publishedPosts: publishedResult.count, draftPosts: draftResult.count,
     totalVisitors: tools.reduce((sum, tool) => sum + Number(tool.views), 0),
     avgSessionTime: 'Not tracked', topSource: 'Not tracked', toolBreakdown: tools.slice(0, 4) });
 }));
@@ -71,7 +83,8 @@ router.post('/analytics/event', run(async (req, res) => {
 router.get('/public/posts', run(async (req, res) => {
   const limit=Number(req.query.limit ?? 100),offset=Number(req.query.offset ?? 0);
   if(!Number.isSafeInteger(limit)||limit<1||limit>100||!Number.isSafeInteger(offset)||offset<0||offset>1000000)return res.status(400).json({error:'Invalid article pagination'});
-  res.json(unwrap(await db.from('posts').select('slug,title,excerpt,published_at,category_slug,cover_image_id,cover_alt,tags').eq('status','published').order('published_at',{ascending:false,nullsFirst:false}).order('slug').range(offset,offset+limit-1)));
+  const result=await db.from('posts').select('slug,title,excerpt,published_at,category_slug,cover_image_id,cover_alt,tags',{count:'exact'}).eq('status','published').order('published_at',{ascending:false,nullsFirst:false}).order('slug').range(offset,offset+limit-1);
+  res.set('X-Total-Count',String(result.count||0)).json(unwrap(result));
 }));
 router.get('/public/posts/:slug', run(async (req,res) => {
   const post=unwrap(await db.from('posts').select('slug,title,excerpt,body,published_at,seo_title,seo_description,cover_image_id,cover_alt,tags').eq('slug',req.params.slug).eq('status','published').maybeSingle());

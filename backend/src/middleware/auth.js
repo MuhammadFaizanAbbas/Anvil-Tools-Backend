@@ -3,7 +3,6 @@ const { adminEmails } = require('../config/env');
 const asyncHandler = require('../lib/async-handler');
 function isOwner(user) { return Boolean(user?.email && adminEmails.includes(user.email.toLowerCase())); }
 async function accessFor(user) {
-  if (user?.app_metadata?.password_setup_required) return { role: 'member', is_active: false };
   if (isOwner(user) && user.email_confirmed_at) return { role: 'owner', is_active: true };
   if (!user?.id || !supabaseAdmin) return null;
   const {data,error} = await supabaseAdmin.from('profiles').select('role,is_active').eq('id',user.id).maybeSingle();

@@ -32,6 +32,10 @@ test('article SEO, body, alt text, tags and JSON-LD are escaped',()=>{
  const html=renderArticle({slug:'safe',title:'<script>bad()</script>',body:'<img src=x onerror=bad()>',seo_title:'A better title',seo_description:'Search description',tags:['<script>'],cover_alt:'" onerror="bad()',cover_image_id:'id'});
  assert.match(html,/<title>A better title/);assert.match(html,/content="Search description"/);assert.ok(!html.includes('<script>bad()'));assert.ok(!html.includes('<img src=x'));assert.match(html,/\\u003cscript/);
 });
+test('article renderer creates a complete guide layout with safe headings and lists',()=>{
+ const html=renderArticle({slug:'formatted-guide',title:'A useful guide',excerpt:'A short introduction.',body:'Keep filenames useful\n\nA descriptive filename helps the team.\n\n## Final checks\n\n- Keep the source\n- Export a copy',tags:['workflow'],published_at:'2026-09-29T00:00:00Z'});
+ assert.match(html,/class="main-nav"/);assert.match(html,/<h2>Keep filenames useful<\/h2>/);assert.match(html,/<h3>Final checks<\/h3>/);assert.match(html,/<ul><li>Keep the source<\/li><li>Export a copy<\/li><\/ul>/);assert.match(html,/Back to all blogs/);
+});
 test('published covers preserve SVG, PNG, JPEG and WebP bytes and MIME types',async()=>{
  const samples=[
   ['svg','image/svg+xml',Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="red"/></svg>')],
@@ -67,5 +71,14 @@ test('published guide pagination includes undated posts and never exposes drafts
  assert.equal(page.length,8);assert.equal(page[0].slug,'page-96');assert.equal(page[7].slug,'page-103');
  for(const query of ['limit=101','limit=0','offset=-1','offset=1.5','limit=abc']){
   assert.equal((await fetch(base+'/api/public/posts?'+query)).status,400);
+ }
+});
+test('admin post pagination returns a page, total count and rejects invalid ranges',async()=>{
+ const response=await fetch(base+'/api/posts?limit=10&offset=10',{headers:{Authorization:'Bearer owner'}});
+ assert.equal(response.status,200);
+ const data=await response.json();
+ assert.equal(data.items.length,10);assert.equal(data.total,posts.length);assert.equal(data.limit,10);assert.equal(data.offset,10);
+ for(const query of ['limit=0','limit=101','offset=-1','offset=1.5']){
+  assert.equal((await fetch(base+'/api/posts?'+query,{headers:{Authorization:'Bearer owner'}})).status,400);
  }
 });

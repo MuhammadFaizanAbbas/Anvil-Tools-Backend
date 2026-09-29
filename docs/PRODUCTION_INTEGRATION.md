@@ -1,6 +1,6 @@
 # Production integration — 29 September 2026
 
-The website calls the Vercel Express backend, which accesses Supabase with a server-only service-role key. Browser Google sign-in uses Supabase Auth directly; every admin API request verifies the resulting token and role.
+The website calls the Vercel Express backend, which accesses Supabase with a server-only service-role key. Admins use Supabase email and password authentication; every admin API request verifies the resulting token and role. Google sign-in is intentionally disabled.
 
 ## Database history
 
@@ -12,14 +12,14 @@ Fresh-project SQL now uses `temp_mail_client_limits` for the application limiter
 
 Fresh seeds create empty articles as drafts. The two existing production seeded articles remain published and empty; no production rows were changed. They need editorial content or an explicit unpublish action. Quick-create `/api/posts` now accepts drafts only; publishing uses the full document editor and requires content.
 
-## Domains and Google login
+## Domains and email login
 
 - Vercel backend `FRONTEND_ORIGINS` accepts comma-separated exact origins, for example `https://anviltools.vercel.app,https://newsite.com`. Redeploy after updating it.
-- Keep `SITE_URL` as the primary canonical website. Admin invitations return to the allowed browser Origin; server calls without Origin use SITE_URL. Each invitation destination must also be an allowed Supabase Auth redirect URL.
-- Add each login page to Supabase Authentication → URL Configuration → Redirect URLs, such as `https://newsite.com/admin-panel/login.html`. Existing frontend PKCE code returns to the domain where login began.
-- Enable Google in Supabase Authentication → Sign In / Providers using the Google OAuth web client ID and secret. Google Cloud's authorized redirect URI is `https://epxzxcqsonxscyvbopqt.supabase.co/auth/v1/callback`.
+- Keep `SITE_URL` as the primary canonical website.
+- Team accounts are created directly with email and password. No invitation or password-setup redirect URL is required.
+- Keep Google disabled. No Google Cloud OAuth client or Google redirect URI is needed.
 - Set the actual confirmed owner email in Vercel `ADMIN_EMAILS`. Owner recovery access is intentionally derived from this environment variable; it is not automatically persisted as a database owner role. New users default to member.
-- Password login remains available. Do not disable Email or public signup settings without checking the intended login/invitation flow.
+- Keep the Email provider enabled. Check the invitation and password setup flow before changing Email or public signup settings.
 - Frontend API calls do not require Edge Function CORS configuration. Only configure Edge origins if a browser starts calling those functions directly.
 
 Multiple allowed domains share the same data and administrator access. This is not isolation between independent sites.
@@ -32,7 +32,7 @@ Multiple allowed domains share the same data and administrator access. This is n
 
 Run `npm test` locally. `node scripts/check-live-integration.js` performs read-only production checks and suppresses public key values. Tests use mocked services; they do not send mail or modify Supabase.
 
-Read-only checks before deployment found: health 200 with databaseConfigured=true; tools 200 with 12 records; unauthenticated admin/me 401; public posts 200 with two records; auth/config 200 with the expected website CORS header. Supabase Auth settings returned **external.google=false** and external.email=true. Adding redirect URLs alone has not enabled Google. Owner login, member rejection with a real session, SMTP, and media upload still need end-to-end verification.
+Read-only checks before deployment found: health 200 with databaseConfigured=true; tools 200 with 12 records; unauthenticated admin/me 401; public posts 200 with two records; auth/config 200 with the expected website CORS header. Supabase Auth settings returned **external.google=false** and external.email=true, which matches the intended setup. Owner login, member rejection with a real session, SMTP, and media upload still need end-to-end verification.
 
 The supplied rollback remains in Downloads and was not executed or added to the migration path. The stronger guard is not a reason to roll back this deployment.
 
@@ -42,13 +42,13 @@ A later read-only check found 100 articles returned by the public feed. A cover 
 
 - `backend/src/routes/articles.js` now serves the stored image MIME type, with Storage metadata/file-extension fallbacks for legacy records. SVG, PNG, JPEG, WebP, GIF, AVIF, BMP and ICO are supported. SVG responses have a restrictive CSP, and unpublished covers remain private. Admin PNG/JPEG uploads still use the existing WebP optimization.
 - `backend/src/routes/content.js` accepts `limit` (1–100) and `offset` for the published feed, with stable ordering.
-- `frontend/blog/index.html` and `frontend/assets/js/published-posts.js` show uploaded and existing static guides in one card grid. The feed loads 12 articles at a time, supports retries, and includes published posts with no publication date. The older query-string article page now includes its cover.
+- `frontend/blog/index.html` and `frontend/assets/js/published-posts.js` show database-published blogs in one card grid. The page shows 30 articles at a time with Previous/Next pagination, supports retries, and includes published posts with no publication date.
 
 Deploy the backend changes first, then the frontend changes. No database migration or article re-upload is required. Regression tests cover actual SVG/PNG/JPEG/WebP responses, draft privacy, pagination beyond 100 records, frontend retries and cover rendering.
 
 ## Temporary inbox fix
 
-The production create endpoint returned HTTP 503 while the old mail.tm integration was deployed. The replacement uses Guerrilla Mail and keeps its session token and cookie on the server. A direct provider check created an inbox and returned its welcome message.
+The production create endpoint returned HTTP 503 while the old mail.tm integration was deployed. The replacement uses Guerrilla Mail and keeps its session token and cookie on the server. The provider's automatic welcome message is filtered from list and detail responses.
 
 - Inbox creation uses `consume_inbox_creation_limit` when available and falls back to production's existing `consume_temp_mail_limit`, so this release does not require a database migration.
 - The browser restores an active inbox after reload, checks every 15 seconds, supports manual refresh, and preserves the current inbox if creating a replacement fails.

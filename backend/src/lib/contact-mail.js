@@ -1,5 +1,6 @@
 ﻿const nodemailer = require('nodemailer');
 const { supabaseAdmin: db } = require('./supabase');
+const { mailTemplate } = require('./mail-template');
 const unwrap = result => { if (result.error) throw result.error; return result.data; };
 function transport() {
   const { SMTP_HOST: host, SMTP_USER: user, SMTP_PASS: pass, SMTP_FROM: from } = process.env;
@@ -19,6 +20,7 @@ async function deliver(job) {
     const smtp = transport();
     const info = await smtp.sendMail({ from: process.env.SMTP_FROM, to: { address: job.recipient },
       replyTo: 'info@velloxtech.com', subject: job.subject, text: job.body,
+      html: mailTemplate({ title: job.subject, intro: job.kind === 'receipt' ? 'We received your message.' : 'A new Anvil Tools message is ready.', body: job.body, preheader: job.subject }),
       messageId: `<${job.id}@velloxtech.com>` });
     if (!info.accepted?.length) throw Object.assign(new Error('Recipient rejected'), { code: 'EENVELOPE' });
     result = { status: 'sent', message_id: info.messageId, last_error: null };

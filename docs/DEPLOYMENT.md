@@ -12,7 +12,7 @@ Create a Supabase project, then run these files in its SQL Editor in order:
 
 The seed adds the existing tool catalog and two existing dashboard post records without replacing existing rows. Demo traffic counts are not imported. All app tables have Row Level Security enabled and access revoked from browser roles; the API uses its server-only service-role key. Rate limiting uses an atomic database function shared across Vercel instances. Expired temporary sessions and rate-limit rows are removed during new inbox requests; there is no persistent worker. Provider mailbox retention remains controlled by Guerrilla Mail.
 
-Create an admin user under Authentication > Users and set its password. Add its email to `ADMIN_EMAILS`. A valid Supabase account alone does not grant admin access. Disable public signups if your project only needs invited administrators.
+Create the owner under Authentication > Users and set its password. Add its email to `ADMIN_EMAILS`. After the owner signs in, additional password accounts can be created in Team & access. A valid Supabase account alone does not grant admin access. Disable public signups if the site only needs administrator-created accounts.
 
 ## 2. Vercel backend
 

@@ -33,6 +33,45 @@ function renderBody(body) {
   }).join('');
 }
 
+function renderFooter() {
+  const base = site();
+  return `<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:10px;"><img class="brand-mark" src="${base}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</div>
+        <p class="small-note">Free, browser-based tools for email, images, PDFs, and everyday developer tasks. No installs, no accounts required for most tools.</p>
+      </div>
+      <div><h4>Tools</h4><ul>
+        <li><a href="${base}/tools/temp-mail.html">Temp mail</a></li>
+        <li><a href="${base}/tools/background-remover.html">Background remover</a></li>
+        <li><a href="${base}/tools/pdf-merge.html">PDF merge</a></li>
+        <li><a href="${base}/tools/index.html">View all tools</a></li>
+      </ul></div>
+      <div><h4>Company</h4><ul>
+        <li><a href="${base}/about.html">About</a></li>
+        <li><a href="${base}/blog/index.html">Blogs</a></li>
+        <li><a href="${base}/contact.html">Contact</a></li>
+      </ul></div>
+      <div><h4>Legal</h4><ul>
+        <li><a href="${base}/privacy-policy.html">Privacy policy</a></li>
+        <li><a href="${base}/terms-of-service.html">Terms of service</a></li>
+        <li><a href="${base}/cookie-policy.html">Cookie policy</a></li>
+        <li><a href="${base}/disclaimer.html">Disclaimer</a></li>
+        <li><button type="button" class="privacy-settings" id="privacy-settings" aria-controls="consent-banner" aria-expanded="false">Privacy settings</button></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom"><span>&copy; <span class="current-year"></span> Anvil Tools. All rights reserved.</span><span>Developed by VelloxTech</span></div>
+  </div>
+</footer>
+<div id="consent-banner" hidden aria-hidden="true" role="region" aria-label="Privacy preferences">
+  <div class="consent-heading"><strong>Your privacy, your choice</strong><button type="button" id="consent-close" aria-label="Close privacy preferences">&#215;</button></div>
+  <p>Choose your preferences for optional analytics and personalized advertising. Advertising is currently disabled. Read our <a href="${base}/cookie-policy.html">cookie policy</a> and <a href="${base}/privacy-policy.html">privacy policy</a>. You can change your choices from the footer anytime.</p>
+  <div class="btn-row"><button type="button" class="btn" id="consent-reject">Reject optional</button><button type="button" class="btn" id="consent-customize" aria-expanded="false" aria-controls="consent-custom-panel">Customize</button><button type="button" class="btn primary" id="consent-accept">Accept optional</button></div>
+  <div id="consent-custom-panel" hidden><label><input type="checkbox" id="consent-analytics"> Allow analytics</label><label><input type="checkbox" id="consent-personalized"> Allow personalized advertising</label><button type="button" class="btn" id="consent-save">Save preferences</button></div>
+</div>`;
+}
+
 function renderArticle(post) {
   const canonical = `${site()}/journal/${encodeURIComponent(post.slug)}`;
   const title = post.seo_title || post.title;
@@ -56,7 +95,7 @@ ${image ? `<meta property="og:image" content="${escape(image)}"><meta property="
 <article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Blog')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time></p>` : ''}</header>
 ${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}">` : ''}<div class="article-content">${renderBody(post.body)}</div>
 ${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${site()}/blog/index.html">&#8592; Back to all blogs</a></article></main>
-<footer class="site-footer"><div class="wrap footer-bottom"><span>Developed by VelloxTech</span><a href="${site()}/contact.html">Contact</a><a href="${site()}/privacy-policy.html">Privacy policy</a></div></footer><script src="${site()}/assets/js/main.js" defer></script></body></html>`;
+${renderFooter()}<script src="${site()}/assets/js/cmp.js" defer></script><script src="${site()}/assets/js/ads.js" defer></script><script src="${site()}/assets/js/main.js" defer></script></body></html>`;
 }
 
-module.exports = { renderArticle, renderBody, imageUrl, escape, site };
+module.exports = { renderArticle, renderBody, renderFooter, imageUrl, escape, site };

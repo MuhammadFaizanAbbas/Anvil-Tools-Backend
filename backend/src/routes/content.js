@@ -3,6 +3,14 @@ const { supabaseAdmin: db } = require('../lib/supabase');
 const { requireAdmin } = require('../middleware/auth');
 const run = require('../lib/async-handler');
 const crypto = require('node:crypto');
+const { recommendations } = require('../lib/recommendations');
+router.get('/public/recommendations', run(async (req,res) => {
+  const slug = req.query.slug ?? '', limit = Number(req.query.limit ?? 6);
+  if (typeof slug !== 'string' || slug.length > 150 || (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) || !Number.isSafeInteger(limit) || limit < 1 || limit > 12) {
+    return res.status(400).json({error:'Invalid recommendation parameters'});
+  }
+  res.json(await recommendations(db,slug,limit));
+}));
 function unwrap(result) { if (result.error) throw result.error; return result.data; }
 const postShape = row => ({ ...row, updatedAt: row.updated_at?.slice(0, 10) });
 

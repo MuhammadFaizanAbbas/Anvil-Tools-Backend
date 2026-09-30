@@ -1,7 +1,6 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 process.env.ADMIN_EMAILS = 'owner@example.com';
-process.env.FRONTEND_ORIGINS = 'https://one.example,https://two.example';
 process.env.SITE_URL = 'https://one.example';
 process.env.VERCEL = '';
 let allowed = true, saved = [], createdUsers = [], rpcCalls = [], rpcError = null;

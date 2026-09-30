@@ -1,4 +1,4 @@
-﻿const {test,before,after}=require('node:test');const assert=require('node:assert/strict');const sharp=require('sharp');
+const {test,before,after}=require('node:test');const assert=require('node:assert/strict');const sharp=require('sharp');
 const {prepareImage}=require('../backend/src/lib/images');const {renderArticle}=require('../backend/src/lib/articles');
 process.env.ADMIN_EMAILS='owner@example.com';
 const assets=[],posts=[],objects=new Map();let failInsert=false;
@@ -25,16 +25,16 @@ test('draft cover bytes and draft articles stay private',async()=>{
  assert.equal((await fetch(base+`/api/public/post-images/${asset.id}`)).status,404);
  assert.equal((await fetch(base+'/api/public/articles/image-guide')).status,404);
  posts[0].status='published';assert.equal((await fetch(base+`/api/public/post-images/${asset.id}`)).status,200);
- const response=await fetch(base+'/api/public/articles/image-guide');assert.equal(response.status,200);assert.equal(response.headers.get('x-robots-tag'),null);const html=await response.text();assert.match(html,/rel="canonical"/);assert.match(html,/og:image/);assert.match(html,/Article body/);
- const sitemap=await fetch(base+'/api/public/sitemap.xml');assert.match(await sitemap.text(),/journal\/image-guide/);
+ const response=await fetch(base+'/api/public/articles/image-guide',{headers:{'X-Frontend-Origin':'https://nevco.online'}});assert.equal(response.status,200);assert.equal(response.headers.get('x-robots-tag'),null);const html=await response.text();assert.match(html,/rel="canonical" href="https:\/\/nevco\.online\/journal\/image-guide"/);assert.match(html,/og:image/);assert.match(html,/Article body/);
+ const sitemap=await fetch(base+'/api/public/sitemap.xml',{headers:{'X-Forwarded-Host':'site-two.example','X-Forwarded-Proto':'https'}});assert.match(await sitemap.text(),/https:\/\/site-two\.example\/journal\/image-guide/);
 });
 test('article SEO, body, alt text, tags and JSON-LD are escaped',()=>{
- const html=renderArticle({slug:'safe',title:'<script>bad()</script>',body:'<img src=x onerror=bad()>',seo_title:'A better title',seo_description:'Search description',tags:['<script>'],cover_alt:'" onerror="bad()',cover_image_id:'id'});
+ const html=renderArticle({slug:'safe',title:'<script>bad()</script>',body:'<img src=x onerror=bad()>',seo_title:'A better title',seo_description:'Search description',tags:['<script>'],cover_alt:'" onerror="bad()',cover_image_id:'id'},'https://site.example');
  assert.match(html,/<title>A better title/);assert.match(html,/content="Search description"/);assert.ok(!html.includes('<script>bad()'));assert.ok(!html.includes('<img src=x'));assert.match(html,/\\u003cscript/);
 });
 test('article renderer creates a complete guide layout with safe headings and lists',()=>{
- const html=renderArticle({slug:'formatted-guide',title:'A useful guide',excerpt:'A short introduction.',body:'Keep filenames useful\n\nA descriptive filename helps the team.\n\n## Final checks\n\n- Keep the source\n- Export a copy',tags:['workflow'],published_at:'2026-09-29T00:00:00Z'});
- assert.match(html,/class="main-nav"/);assert.match(html,/<h2>Keep filenames useful<\/h2>/);assert.match(html,/<h3>Final checks<\/h3>/);assert.match(html,/<ul><li>Keep the source<\/li><li>Export a copy<\/li><\/ul>/);assert.match(html,/Back to all blogs/);assert.match(html,/class="footer-grid"/);assert.match(html,/id="privacy-settings"/);assert.match(html,/id="consent-banner"/);
+ const html=renderArticle({slug:'formatted-guide',title:'A useful guide',excerpt:'A short introduction.',body:'Keep filenames useful\n\nA descriptive filename helps the team.\n\n## Final checks\n\n- Keep the source\n- Export a copy',tags:['workflow'],published_at:'2026-09-29T00:00:00Z'},'https://site.example');
+ assert.match(html,/class="main-nav"/);assert.match(html,/<h2>Keep filenames useful<\/h2>/);assert.match(html,/<h3>Final checks<\/h3>/);assert.match(html,/<ul><li>Keep the source<\/li><li>Export a copy<\/li><\/ul>/);assert.match(html,/Back to all blogs/);assert.match(html,/class="footer-grid"/);assert.match(html,/privacy-policy\.html/);assert.doesNotMatch(html,/id="privacy-settings"/);assert.doesNotMatch(html,/id="consent-banner"/);
 });
 test('published covers preserve SVG, PNG, JPEG and WebP bytes and MIME types',async()=>{
  const samples=[

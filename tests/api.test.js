@@ -3,7 +3,6 @@ const assert = require('node:assert/strict');
 process.env.SUPABASE_URL = '';
 process.env.SUPABASE_ANON_KEY = '';
 process.env.SUPABASE_SERVICE_ROLE_KEY = '';
-process.env.FRONTEND_ORIGINS = 'https://frontend.example.com';
 const app = require('../server');
 let server;
 let base;
@@ -25,13 +24,13 @@ test('allows cPanel preflight including bearer authorization', async () => {
     'Access-Control-Request-Headers': 'authorization,content-type',
   } });
   assert.equal(response.status, 204);
-  assert.equal(response.headers.get('access-control-allow-origin'), 'https://frontend.example.com');
+  assert.equal(response.headers.get('access-control-allow-origin'), '*');
   assert.match(response.headers.get('access-control-allow-headers'), /Authorization/);
 });
-test('rejects an unapproved origin', async () => {
+test('allows a new frontend origin without backend configuration', async () => {
   const response = await fetch(`${base}/api/health`, { headers: { Origin: 'https://unapproved.example.com' } });
-  assert.equal(response.status, 403);
-  assert.equal(response.headers.get('access-control-allow-origin'), null);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('access-control-allow-origin'), '*');
 });
 test('missing database fails closed instead of accepting a demo cookie', async () => {
   const response = await fetch(`${base}/api/admin/me`, { headers: { Cookie: 'admin_session=authenticated' } });

@@ -1,10 +1,8 @@
 const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[character]));
-const site = () => (process.env.SITE_URL || 'https://anviltools.vercel.app').replace(/\/$/, '');
-
-function imageUrl(post) {
-  return post.cover_image_id ? `${site()}/journal-images/${post.cover_image_id}` : null;
+function imageUrl(post, siteOrigin) {
+  return post.cover_image_id ? `${siteOrigin}/journal-images/${post.cover_image_id}` : null;
 }
 
 function isPlainHeading(text, index, blocks) {
@@ -33,8 +31,8 @@ function renderBody(body) {
   }).join('');
 }
 
-function renderFooter() {
-  const base = site();
+function renderFooter(siteOrigin) {
+  const base = siteOrigin;
   return `<footer class="site-footer">
   <div class="wrap">
     <div class="footer-grid">
@@ -58,25 +56,20 @@ function renderFooter() {
         <li><a href="${base}/terms-of-service.html">Terms of service</a></li>
         <li><a href="${base}/cookie-policy.html">Cookie policy</a></li>
         <li><a href="${base}/disclaimer.html">Disclaimer</a></li>
-        <li><button type="button" class="privacy-settings" id="privacy-settings" aria-controls="consent-banner" aria-expanded="false">Privacy settings</button></li>
+
       </ul></div>
     </div>
     <div class="footer-bottom"><span>&copy; <span class="current-year"></span> Anvil Tools. All rights reserved.</span><span>Developed by VelloxTech</span></div>
   </div>
 </footer>
-<div id="consent-banner" hidden aria-hidden="true" role="region" aria-label="Privacy preferences">
-  <div class="consent-heading"><strong>Your privacy, your choice</strong><button type="button" id="consent-close" aria-label="Close privacy preferences">&#215;</button></div>
-  <p>Choose your preferences for optional analytics and personalized advertising. Advertising is currently disabled. Read our <a href="${base}/cookie-policy.html">cookie policy</a> and <a href="${base}/privacy-policy.html">privacy policy</a>. You can change your choices from the footer anytime.</p>
-  <div class="btn-row"><button type="button" class="btn" id="consent-reject">Reject optional</button><button type="button" class="btn" id="consent-customize" aria-expanded="false" aria-controls="consent-custom-panel">Customize</button><button type="button" class="btn primary" id="consent-accept">Accept optional</button></div>
-  <div id="consent-custom-panel" hidden><label><input type="checkbox" id="consent-analytics"> Allow analytics</label><label><input type="checkbox" id="consent-personalized"> Allow personalized advertising</label><button type="button" class="btn" id="consent-save">Save preferences</button></div>
-</div>`;
+`;
 }
 
-function renderArticle(post) {
-  const canonical = `${site()}/journal/${encodeURIComponent(post.slug)}`;
+function renderArticle(post, siteOrigin) {
+  const canonical = `${siteOrigin}/journal/${encodeURIComponent(post.slug)}`;
   const title = post.seo_title || post.title;
   const description = post.seo_description || post.excerpt;
-  const image = imageUrl(post);
+  const image = imageUrl(post, siteOrigin);
   const tags = post.tags || [];
   const ld = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description,
@@ -88,14 +81,14 @@ function renderArticle(post) {
 <title>${escape(title)} | Anvil Tools</title><meta name="description" content="${escape(description)}"><link rel="canonical" href="${escape(canonical)}">
 <meta property="og:type" content="article"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${escape(canonical)}">
 ${image ? `<meta property="og:image" content="${escape(image)}"><meta property="og:image:alt" content="${escape(post.cover_alt || '')}">` : ''}<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">
-<link rel="icon" href="${site()}/assets/images/anvil-mark.svg"><link rel="stylesheet" href="${site()}/assets/css/style.css"><link rel="stylesheet" href="${site()}/assets/css/refinements.css"><link rel="stylesheet" href="${site()}/assets/css/design.css"><link rel="stylesheet" href="${site()}/assets/css/content.css"><script type="application/ld+json">${ld}</script></head>
+<link rel="icon" href="${siteOrigin}/assets/images/anvil-mark.svg"><link rel="stylesheet" href="${siteOrigin}/assets/css/style.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/refinements.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/design.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/content.css"><script type="application/ld+json">${ld}</script></head>
 <body class="public-site article-page"><a class="skip-link" href="#main-content">Skip to article</a>
-<header class="site-header"><div class="header-row"><a class="logo" href="${site()}/"><img src="${site()}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</a><button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span aria-hidden="true">&#9776;</span></button><nav class="main-nav" aria-label="Main navigation"><a href="${site()}/">Home</a><a href="${site()}/tools/index.html">All tools</a><a aria-current="page" href="${site()}/blog/index.html">Blogs</a><a href="${site()}/about.html">About</a><a href="${site()}/contact.html">Contact</a></nav></div></header>
-<main class="wrap" id="main-content"><p class="breadcrumbs"><a href="${site()}/">Home</a> <span aria-hidden="true">/</span> <a href="${site()}/blog/index.html">Blogs</a></p>
+<header class="site-header"><div class="header-row"><a class="logo" href="${siteOrigin}/"><img src="${siteOrigin}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</a><button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span aria-hidden="true">&#9776;</span></button><nav class="main-nav" aria-label="Main navigation"><a href="${siteOrigin}/">Home</a><a href="${siteOrigin}/tools/index.html">All tools</a><a aria-current="page" href="${siteOrigin}/blog/index.html">Blogs</a><a href="${siteOrigin}/about.html">About</a><a href="${siteOrigin}/contact.html">Contact</a></nav></div></header>
+<main class="wrap" id="main-content"><p class="breadcrumbs"><a href="${siteOrigin}/">Home</a> <span aria-hidden="true">/</span> <a href="${siteOrigin}/blog/index.html">Blogs</a></p>
 <article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Blog')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time></p>` : ''}</header>
 ${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}">` : ''}<div class="article-content">${renderBody(post.body)}</div>
-${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${site()}/blog/index.html">&#8592; Back to all blogs</a></article></main>
-${renderFooter()}<script src="${site()}/assets/js/cmp.js" defer></script><script src="${site()}/assets/js/ads.js" defer></script><script src="${site()}/assets/js/main.js" defer></script></body></html>`;
+${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${siteOrigin}/blog/index.html">&#8592; Back to all blogs</a></article></main>
+${renderFooter(siteOrigin)}<script src="${siteOrigin}/assets/js/main.js" defer></script></body></html>`;
 }
 
-module.exports = { renderArticle, renderBody, renderFooter, imageUrl, escape, site };
+module.exports = { renderArticle, renderBody, renderFooter, imageUrl, escape };

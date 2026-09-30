@@ -26,7 +26,6 @@ Set these environment variables for the environments you deploy:
 | `SUPABASE_ANON_KEY` | Supabase anon/publishable key for password login |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role/secret key; backend only |
 | `ADMIN_EMAILS` | Comma-separated permitted admin emails |
-| `FRONTEND_ORIGINS` | `https://example.com,https://www.example.com` using your exact cPanel origins |
 | `NODE_ENV` | `production` |
 
 Do not include trailing slashes or paths in origins. Add local origins only if deliberately using this API for local development. Redeploy after configuration changes.
@@ -54,7 +53,7 @@ The frontend configuration is included in `frontend/vercel.json`. If your fronte
 
 If copying backend files to a new repository, retain root `server.js`, `package.json`, `package-lock.json`, `vercel.json`, and the complete `backend/src/` tree. Uploading only `backend/` loses the dependency manifest and expected entry point layout.
 
-The frontend API URL is now set to `https://anvil-tools-backend.vercel.app` in `assets/js/config.js`. In the backend Vercel project set `FRONTEND_ORIGINS=https://anviltools.vercel.app`. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, and `ADMIN_EMAILS` in Production, then redeploy. Apply the SQL and create the admin user as described above. Never add the service-role key to the frontend project.
+The frontend API URL is now set to `https://anvil-tools-backend.vercel.app` in `assets/js/config.js`. New frontend domains do not need a backend origin environment variable. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, and `ADMIN_EMAILS` in Production, then redeploy. Apply the SQL and create the admin user as described above. Never add the service-role key to the frontend project.
 
 During the September 28, 2026 checks:
 
@@ -109,7 +108,7 @@ See [CONTACT_SETUP.md](CONTACT_SETUP.md) for migration 003, SMTP environment var
 
 ## Published articles and images
 
-Apply migration 005 after 004 (or use full-schema.sql only for a new project). The frontend Vercel configuration proxies `/journal/:slug`, `/journal-images/:id`, and `/journal-sitemap.xml` to the backend `/api/public/articles/:slug`, `/api/public/post-images/:id`, and `/api/public/sitemap.xml`. Set backend SITE_URL to the canonical frontend origin. If you change the backend domain, update both frontend Vercel configuration files.
+Apply migrations 005 and 006 after 004 for an existing development installation created from these scripts (or use full-schema.sql only for a new project). The frontend Vercel configuration proxies `/journal/:slug`, `/journal-images/:id`, and `/journal-sitemap.xml` to the backend `/api/public/articles/:slug`, `/api/public/post-images/:id`, and `/api/public/sitemap.xml`. The backend derives the public site origin from `X-Frontend-Origin`, `Origin`, or the proxy's forwarded host. `SITE_URL` is only an optional fallback. If you change the backend domain, update both frontend Vercel configuration files.
 
 For cPanel or another static host, configure equivalent reverse-proxy routes with your hosting provider; uploading static files alone cannot serve these dynamic journal URLs. Local static previews also require equivalent proxying to exercise published journal pages.
 

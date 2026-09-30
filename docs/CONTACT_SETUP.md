@@ -4,7 +4,7 @@
 
 1. In Supabase SQL Editor run `supabase/migrations/003_contact_inbox.sql` after migrations 001 and 002. This creates private contact and outbound-email tables plus the atomic submission function. Browser roles cannot read them.
 2. In the **backend** Vercel project's Production environment, set `SMTP_HOST`, `SMTP_PORT` (587 or 465), `SMTP_USER`, `SMTP_PASS`, and `SMTP_FROM=info@velloxtech.com` (or a sender address authorized by your SMTP provider). Configure SPF/DKIM with your provider for that sender domain. Port 465 uses implicit TLS; 587 requires STARTTLS with certificate verification. Never place SMTP credentials in frontend files or GitHub.
-3. Existing backend configuration is still required: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_EMAILS`, and `FRONTEND_ORIGINS=https://anviltools.vercel.app`. Redeploy after changing environment variables.
+3. Existing backend configuration is still required: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `ADMIN_EMAILS`. The shared backend accepts browser calls from new frontend domains without another origin variable. Redeploy after changing environment variables.
 4. Open `/contact.html`, submit a real message from an address you control, and verify the alert at `faizan@velloxtech.com` and receipt at your submission address. No real emails were sent by the automated tests.
 5. Sign in at `/admin-panel/login.html`, open **Contact inbox**, select the request, and send a reply. Replies use the stored client address; the browser cannot choose an arbitrary recipient. Replies and email delivery records are visible in the conversation. Future email replies received in your mailbox are not imported; inbound email sync is not implemented.
 

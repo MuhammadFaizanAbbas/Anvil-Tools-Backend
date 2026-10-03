@@ -3,9 +3,28 @@ const {supabaseAdmin:db}=require('../lib/supabase');
 const run=require('../lib/async-handler');
 const {renderArticle,escape}=require('../lib/articles');
 const {requestSiteOrigin}=require('../lib/site-origin');
+const {PAGE_SIZE,blogPage,renderBlog}=require('../lib/blog');
+const redirects=require('../lib/article-redirects.json');
 const unwrap=result=>{if(result.error)throw result.error;return result.data;};
+router.get('/blog',run(async(req,res)=>{
+ const page=blogPage(req.query.page);
+ if(page===null)return res.status(400).json({error:'Page must be a whole number between 1 and 33334.'});
+ const offset=(page-1)*PAGE_SIZE;
+ let posts;
+ try { posts=unwrap(await db.from('posts').select('slug,title,excerpt,cover_image_id,cover_alt').eq('status','published').order('published_at',{ascending:false,nullsFirst:false}).order('slug').range(offset,offset+PAGE_SIZE)); }
+ catch(error) {
+  console.error('Published blog listing unavailable:',error.code||'query failed');
+  res.removeHeader('X-Robots-Tag');
+  return res.set('Cache-Control','no-store').type('html').send(renderBlog([],requestSiteOrigin(req),{page,unavailable:true}));
+ }
+ if(page>1&&!posts.length)return res.status(404).type('html').send('<!doctype html><title>Page not found</title><h1>Page not found</h1><a href="/blog/index.html">Return to blogs</a>');
+ res.removeHeader('X-Robots-Tag');
+ res.set('Cache-Control','no-store').type('html').send(renderBlog(posts.slice(0,PAGE_SIZE),requestSiteOrigin(req),{page,hasNext:posts.length>PAGE_SIZE}));
+}));
 router.get('/articles/:slug',run(async(req,res)=>{
  const siteOrigin=requestSiteOrigin(req);
+ const target=Object.hasOwn(redirects,req.params.slug)?redirects[req.params.slug]:null;
+ if(target){res.removeHeader('X-Robots-Tag');return res.set('Cache-Control','public, max-age=300').redirect(301,`${siteOrigin}/journal/${target}`);}
  const post=unwrap(await db.from('posts').select('*').eq('slug',req.params.slug).eq('status','published').maybeSingle());
  if(!post)return res.status(404).type('html').send(`<!doctype html><title>Article unavailable</title><h1>Article unavailable</h1><a href="${escape(siteOrigin)}/blog/index.html">Return to guides</a>`);
  res.removeHeader('X-Robots-Tag');res.set('Cache-Control','no-store').type('html').send(renderArticle(post,siteOrigin));

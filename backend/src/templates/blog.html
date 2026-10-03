@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog | Anvil Tools</title>
+<meta name="description" content="Blogs and practical tips from Anvil Tools.">
+<link rel="canonical" href="https://anviltools.vercel.app/blog/index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/refinements.css">
+
+<link rel="icon" type="image/svg+xml" href="/assets/images/anvil-mark.svg">
+<link rel="stylesheet" href="/assets/css/design.css">
+<link rel="stylesheet" href="/assets/css/content.css">
+<meta property="og:type" content="website"><meta property="og:title" content="Blog | Anvil Tools"><meta property="og:description" content="Blogs and practical tips from Anvil Tools."><meta property="og:url" content="https://anviltools.vercel.app/blog/index.html"><meta name="twitter:card" content="summary">
+<noscript><style>.public-site .nav-toggle{display:none}.public-site .header-row{flex-wrap:wrap}.public-site .main-nav{display:flex;position:static;width:100%;flex-wrap:wrap;flex-direction:row;padding:8px 0;border:0;box-shadow:none}.public-site .main-nav a{width:auto}</style></noscript></head>
+<body class="public-site">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+  <div class="header-row">
+    <a class="logo" href="../index.html">
+      <img class="brand-mark" src="/assets/images/anvil-mark.svg" width="36" height="36" alt="">
+      Anvil Tools
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span aria-hidden="true">&#9776;</span></button>
+    <nav class="main-nav"><a href="../">Home</a><a href="../tools/index.html">All tools</a><a href="../blog/index.html" aria-current="page">Blogs</a><a href="../about.html">About</a><a href="../contact.html">Contact</a></nav>
+  </div>
+</header>
+<main class="wrap" id="main-content">
+
+<p class="breadcrumbs"><a href="../index.html">Home</a> / <span>Blog</span></p>
+<section class="hero">
+  <h1>Blog</h1>
+  <p class="lede">Practical articles on getting more out of the tools on Anvil Tools.</p>
+</section>
+<section id="publishedBlogs" aria-label="All blogs">
+  <h2>Latest articles</h2>
+  <p id="blogsStatus" role="status"><!-- published-status --></p>
+  <div class="tool-grid" id="publishedGuideCards"><!-- published-cards --></div>
+  <!-- blog-pagination --><nav class="blog-pagination" id="blogPagination" aria-label="Article pages" hidden><a class="btn" id="blogsPrev" href="/blog/index.html">Previous</a><span id="blogsPage" aria-live="polite"></span><a class="btn" id="blogsNext" href="/blog/index.html?page=2">Next</a></nav><!-- /blog-pagination --><div class="btn-row"><button class="btn" id="blogsRetry" type="button" hidden>Try again</button></div>
+</section>
+<!-- editorial-library --><section class="editorial-library" aria-labelledby="editorial-title"><h2 id="editorial-title">Practical guides</h2><p>Step-by-step workflows, examples, and checks for the tools. Read any guide directly, then open its tool when you are ready.</p><div class="tool-grid" id="editorialGuideCards"><article class="tool-card"><span class="category-tag">Email tools</span><h3><a href="/blog/temporary-email-vs-aliases.html">Temporary Email or an Email Alias: Choose the Right Inbox</a></h3><p>A practical decision guide for short tests, ongoing signups, account recovery, and keeping your main inbox private.</p><a class="tool-link" href="/blog/temporary-email-vs-aliases.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">PDF tools</span><h3><a href="/blog/merge-pdfs-locally.html">Merge PDFs in Your Browser and Check the Result</a></h3><p>Put files in the right order, handle protected documents, and inspect forms, bookmarks, signatures, and scanned pages after merging.</p><a class="tool-link" href="/blog/merge-pdfs-locally.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">PDF tools</span><h3><a href="/blog/images-to-clear-pdfs.html">Turn Images into Clear PDFs Without Losing the Details</a></h3><p>Prepare readable images, understand page dimensions, arrange the sequence, and check a PDF before sharing or printing.</p><a class="tool-link" href="/blog/images-to-clear-pdfs.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Image tools</span><h3><a href="/blog/background-removal-and-transparency.html">Better Background Removal: Hair, Edges, and Transparent PNGs</a></h3><p>Choose a useful source photo, understand difficult edges, and inspect a transparent cutout on light and dark backgrounds.</p><a class="tool-link" href="/blog/background-removal-and-transparency.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Developer tools</span><h3><a href="/blog/format-and-check-json.html">Format JSON Without Overlooking Data Problems</a></h3><p>Work through syntax errors, nested structures, duplicate keys, number precision, and differences between JSON, JSON5, and JSONC.</p><a class="tool-link" href="/blog/format-and-check-json.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Developer tools</span><h3><a href="/blog/jwt-decoding.html">Read a JWT Without Mistaking Decoding for Verification</a></h3><p>Inspect the header and payload, interpret timestamps, and understand the checks that only the receiving application can perform.</p><a class="tool-link" href="/blog/jwt-decoding.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Developer tools</span><h3><a href="/blog/base64-text-encoding.html">Base64 for Text: Encoding, Unicode, and Safe Round Trips</a></h3><p>Use a small example to check encoding and decoding, recognize Base64url, and avoid treating encoded text as a secret.</p><a class="tool-link" href="/blog/base64-text-encoding.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Developer tools</span><h3><a href="/blog/sha256-text-checks.html">Use SHA-256 to Compare Text Carefully</a></h3><p>Understand UTF-8 input, trailing newlines, hexadecimal output, and the limits of a digest as evidence.</p><a class="tool-link" href="/blog/sha256-text-checks.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Generators</span><h3><a href="/blog/qr-codes-for-print.html">Check a QR Code Before You Print or Share It</a></h3><p>Choose a stable destination, preserve contrast and clear space, and test the final printed size with a real phone.</p><a class="tool-link" href="/blog/qr-codes-for-print.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Generators</span><h3><a href="/blog/strong-passwords.html">Create and Store a Unique Password for Each Account</a></h3><p>Set a useful length, match the service&#39;s allowed characters, check the output, and store it safely without reusing it.</p><a class="tool-link" href="/blog/strong-passwords.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Text tools</span><h3><a href="/blog/word-and-character-counts.html">Why Word and Character Counts Can Differ Between Apps</a></h3><p>Compare whitespace, emoji, paragraph breaks, punctuation, and reading-time estimates before relying on a submission limit.</p><a class="tool-link" href="/blog/word-and-character-counts.html">Read guide &#8594;</a></article>
+<article class="tool-card"><span class="category-tag">Developer tools</span><h3><a href="/blog/url-encoding-components.html">URL Encoding: Keep Query Values Separate from URL Structure</a></h3><p>Learn when to encode a component, why ampersands and plus signs matter, and how to avoid accidental double encoding.</p><a class="tool-link" href="/blog/url-encoding-components.html">Read guide &#8594;</a></article></div></section><!-- /editorial-library -->
+
+
+<!-- expanded-content --><!-- /expanded-content --></main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:10px;"><img class="brand-mark" src="/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</div>
+        <p class="small-note">Free, browser-based tools for email, images, PDFs, and everyday developer tasks. No installs, no accounts required for most tools.</p>
+      </div>
+      <div>
+        <h4>Tools</h4>
+        <ul>
+          <li><a href="../tools/temp-mail.html">Temp mail</a></li>
+          <li><a href="../tools/background-remover.html">Background remover</a></li>
+          <li><a href="../tools/pdf-merge.html">PDF merge</a></li>
+          <li><a href="../tools/index.html">View all tools</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../blog/index.html">Blogs</a></li>
+          <li><a href="../contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="../privacy-policy.html">Privacy policy</a></li>
+          <li><a href="../terms-of-service.html">Terms of service</a></li>
+          <li><a href="../cookie-policy.html">Cookie policy</a></li>
+          <li><a href="../disclaimer.html">Disclaimer</a></li>
+
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span class="current-year">2026</span> Anvil Tools. All rights reserved.</span>
+      <span>Anvil Tools is a VelloxTech project.</span>
+    </div>
+  </div>
+</footer>
+
+
+
+<script src="/assets/js/main.js"></script>
+
+<script src="/assets/js/config.js"></script><script src="/assets/js/api.js"></script><script src="/assets/js/published-posts.js"></script></body>
+</html>

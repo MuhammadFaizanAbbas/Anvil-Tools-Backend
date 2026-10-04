@@ -47,6 +47,15 @@ function renderMarkdown(body, options = {}) {
       if (i < lines.length) i++;
       output.push(`<pre><code${language ? ` class="language-${language}"` : ''}>${escape(code.join('\n'))}</code></pre>`); continue;
     }
+    const image = line.match(/^!\[([^\]\n]+)\]\(([^\s)]+)\)$/);
+    if (image) {
+      // Only repository-owned raster examples; no remote tracking or raw attributes.
+      const source = image[2];
+      output.push(/^\/assets\/images\/(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.(?:png|webp|jpe?g)$/i.test(source)
+        ? `<figure class="article-example"><img src="${escape(source)}" alt="${escape(image[1])}" loading="lazy" decoding="async" style="display:block;max-width:100%;height:auto"><figcaption>${escape(image[1])}</figcaption></figure>`
+        : `<p>${escape(line)}</p>`);
+      i++; continue;
+    }
     const match = line.match(/^(#{1,6})\s+(.+)$/);
     if (match) {
       i++;

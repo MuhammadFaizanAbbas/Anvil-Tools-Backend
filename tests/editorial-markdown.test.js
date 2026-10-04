@@ -38,3 +38,14 @@ test('legacy plain headings remain readable and incomplete fences stay escaped',
   assert.match(renderMarkdown('Keep filenames useful\n\nA descriptive filename helps.').html, /<h2 id="keep-filenames-useful">/);
   assert.match(renderMarkdown('```html\n<img src=x>').html, /&lt;img src=x&gt;<\/code><\/pre>/);
 });
+
+test('article examples allow local raster images and escape captions and unsafe sources', () => {
+  const html = renderMarkdown('![Before <and> after](/assets/images/editorial/example.png)').html;
+  assert.match(html, /<figure class="article-example"><img src="\/assets\/images\/editorial\/example.png"/);
+  assert.match(html, /alt="Before &lt;and&gt; after"/);
+  assert.match(html, /<figcaption>Before &lt;and&gt; after<\/figcaption>/);
+  for (const source of ['https://example.test/tracker.png', '//example.test/x.png', '/assets/images/../x.png', '/assets/images/%2e%2e/x.png', '/assets/images/x.svg', 'javascript:alert%281%29']) {
+    assert.doesNotMatch(renderMarkdown(`![Unsafe](${source})`).html, /<img |<a /);
+  }
+  assert.doesNotMatch(renderMarkdown('```\n![Example](/assets/images/example.png)\n```').html, /<img /);
+});

@@ -56,6 +56,7 @@ The follow-up is complete and included in the refreshed archives. The checks bel
 - Outdated browser page URLs jump directly to the last current page, or to page one when the total header is missing or invalid. Recovery is limited to one retry, and navigation stays locked until that retry finishes.
 - PHP and Node listings omit links for unavailable previous/next pages. Page two links back to `/blog/index.html`. Missing server-rendered pages return HTTP 404 with `noindex, follow` and working navigation.
 - The legacy article JSON endpoint returns HTTP 410 for retired articles, with a replacement URL when one exists, without querying or exposing the archived body.
+- Retired-article redirects use `Cache-Control: no-store` because their destination follows the current frontend domain. This prevents a shared CDN cache from reusing another frontend's destination.
 
 The final regression suite passed all 98 tests, with no failures or skipped tests; see `docs/audits/post-pagination-tests.txt`. Syntax and script-reference checks passed for 104 files, all ten PHP files passed syntax checks, and all three refreshed ZIP archives passed integrity checks. These are local checks; use the live audit commands above after deployment.
 

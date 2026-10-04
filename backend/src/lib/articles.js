@@ -1,4 +1,5 @@
 const { escape, renderMarkdown } = require('./editorial-markdown');
+const { versionPublicStyles } = require('./public-assets');
 function imageUrl(post, siteOrigin) {
   return post.cover_image_id ? `${siteOrigin}/journal-images/${post.cover_image_id}` : null;
 }
@@ -57,7 +58,7 @@ function renderArticle(post, siteOrigin) {
     author: organization, publisher: organization, inLanguage: 'en', wordCount: words,
     url: canonical
   }).replace(/</g, '\\u003c');
-  return `<!doctype html>
+  return versionPublicStyles(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escape(title)} | Anvil Tools</title><meta name="description" content="${escape(description)}"><link rel="canonical" href="${escape(canonical)}">
 <meta property="og:type" content="article"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${escape(canonical)}">
@@ -69,7 +70,7 @@ ${image ? `<meta property="og:image" content="${escape(image)}"><meta property="
 <article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Blog')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p><p class="article-meta">By <a href="${siteOrigin}/about.html" rel="author">Anvil Tools</a>${words ? ` · ${Math.max(1, Math.ceil(words / 220))} minute read` : ''}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time>${post.updated_at && post.updated_at.slice(0,10) !== post.published_at.slice(0,10) ? ` · Updated <time datetime="${escape(post.updated_at)}">${escape(post.updated_at.slice(0,10))}</time>` : ''}</p>` : ''}</header>
 ${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}" decoding="async" fetchpriority="high">` : ''}${rendered.toc}<div class="article-content">${rendered.html}</div>
 ${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${siteOrigin}/blog/index.html">&#8592; Back to all blogs</a></article></main>
-${renderFooter(siteOrigin)}<script src="${siteOrigin}/assets/js/main.js" defer></script></body></html>`;
+${renderFooter(siteOrigin)}<script src="${siteOrigin}/assets/js/main.js" defer></script></body></html>`);
 }
 
 module.exports = { renderArticle, renderBody, renderFooter, imageUrl, escape };

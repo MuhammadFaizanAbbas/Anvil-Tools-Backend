@@ -33,8 +33,8 @@ test('article SEO, body, alt text, tags and JSON-LD are escaped',()=>{
  assert.match(html,/<title>A better title/);assert.match(html,/content="Search description"/);assert.ok(!html.includes('<script>bad()'));assert.ok(!html.includes('<img src=x'));assert.match(html,/\\u003cscript/);
 });
 test('article renderer creates a complete guide layout with safe headings and lists',()=>{
- const html=renderArticle({slug:'formatted-guide',title:'A useful guide',excerpt:'A short introduction.',body:'Keep filenames useful\n\nA descriptive filename helps the team.\n\n## Final checks\n\n- Keep the source\n- Export a copy',tags:['workflow'],published_at:'2026-09-29T00:00:00Z'},'https://site.example');
- assert.match(html,/class="main-nav"/);assert.match(html,/<h2>Keep filenames useful<\/h2>/);assert.match(html,/<h3>Final checks<\/h3>/);assert.match(html,/<ul><li>Keep the source<\/li><li>Export a copy<\/li><\/ul>/);assert.match(html,/Back to all blogs/);assert.match(html,/class="footer-grid"/);assert.match(html,/privacy-policy\.html/);assert.doesNotMatch(html,/id="privacy-settings"/);assert.doesNotMatch(html,/id="consent-banner"/);
+ const html=renderArticle({slug:'formatted-guide',title:'A useful guide',excerpt:'A short introduction.',body:'# Keep filenames useful\n\nA descriptive filename helps the team.\n\n## Final checks\n\n- Keep the source\n- Export a copy',tags:['workflow'],published_at:'2026-09-29T00:00:00Z'},'https://site.example');
+ assert.match(html,/class="main-nav"/);assert.match(html,/<h2 id="keep-filenames-useful">Keep filenames useful<\/h2>/);assert.match(html,/<h3 id="final-checks">Final checks<\/h3>/);assert.match(html,/<ul><li>Keep the source<\/li><li>Export a copy<\/li><\/ul>/);assert.match(html,/Back to all blogs/);assert.match(html,/class="footer-grid"/);assert.match(html,/privacy-policy\.html/);assert.doesNotMatch(html,/id="privacy-settings"/);assert.doesNotMatch(html,/id="consent-banner"/);
 });
 test('published covers preserve SVG, PNG, JPEG and WebP bytes and MIME types',async()=>{
  const samples=[

@@ -25,3 +25,15 @@ test('revocation takes effect on the next request even with an existing token',a
  assert.equal((await request(`/api/admin/users/${ids.member}`,'owner',{role:'admin',is_active:false})).status,200);
  assert.equal((await request('/api/admin/me','member')).status,403);
 });
+test('publishing requires a cover and alt text while uncovered drafts can be saved',async()=>{
+ const document={id:'example-guide',slug:'example-guide',title:'Example guide',body:'Useful content.',excerpt:'Example summary.',seo_title:'',seo_description:'',category_slug:null,tags:[],cover_image_id:null,cover_alt:'',status:'published'};
+ const save=body=>fetch(base+'/api/admin/documents',{method:'POST',headers:{Authorization:'Bearer owner','Content-Type':'application/json'},body:JSON.stringify(body)});
+ const beforeCount=rpc.length;
+ const uncovered=await save(document);
+ assert.equal(uncovered.status,400);
+ assert.match((await uncovered.json()).error,/cover image/);
+ assert.equal(rpc.length,beforeCount);
+ assert.equal((await save({...document,cover_image_id:ids.admin})).status,400);
+ assert.equal((await save({...document,cover_image_id:ids.admin,cover_alt:'A readable example image.'})).status,200);
+ assert.equal((await save({...document,status:'draft'})).status,200);
+});

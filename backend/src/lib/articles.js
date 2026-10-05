@@ -17,18 +17,18 @@ function renderFooter(siteOrigin) {
         <div class="logo" style="margin-bottom:10px;"><img class="brand-mark" src="${base}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</div>
         <p class="small-note">Free, browser-based tools for email, images, PDFs, and everyday developer tasks. No installs, no accounts required for most tools.</p>
       </div>
-      <div><h4>Tools</h4><ul>
+      <div><h3>Tools</h3><ul>
         <li><a href="${base}/tools/temp-mail.html">Temp mail</a></li>
         <li><a href="${base}/tools/background-remover.html">Background remover</a></li>
         <li><a href="${base}/tools/pdf-merge.html">PDF merge</a></li>
         <li><a href="${base}/tools/index.html">View all tools</a></li>
       </ul></div>
-      <div><h4>Company</h4><ul>
+      <div><h3>Company</h3><ul>
         <li><a href="${base}/about.html">About</a></li>
         <li><a href="${base}/blog/index.html">Blogs</a></li>
         <li><a href="${base}/contact.html">Contact</a></li>
       </ul></div>
-      <div><h4>Legal</h4><ul>
+      <div><h3>Legal</h3><ul>
         <li><a href="${base}/privacy-policy.html">Privacy policy</a></li>
         <li><a href="${base}/terms-of-service.html">Terms of service</a></li>
         <li><a href="${base}/cookie-policy.html">Cookie policy</a></li>

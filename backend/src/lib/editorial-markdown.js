@@ -1,4 +1,5 @@
 // Deliberately limited Markdown: authored text becomes HTML, raw HTML stays text.
+const exampleImages = require('./editorial-images.json');
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[char]));
@@ -51,8 +52,10 @@ function renderMarkdown(body, options = {}) {
     if (image) {
       // Only repository-owned raster examples; no remote tracking or raw attributes.
       const source = image[2];
+      const knownImage = exampleImages[source];
+      const dimensions = knownImage ? ` width="${knownImage.width}" height="${knownImage.height}"` : '';
       output.push(/^\/assets\/images\/(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.(?:png|webp|jpe?g)$/i.test(source)
-        ? `<figure class="article-example"><img src="${escape(source)}" alt="${escape(image[1])}" loading="lazy" decoding="async" style="display:block;max-width:100%;height:auto"><figcaption>${escape(image[1])}</figcaption></figure>`
+        ? `<figure class="article-example"><img src="${escape(source)}" alt="${escape(image[1])}"${dimensions} loading="lazy" decoding="async" style="display:block;max-width:100%;height:auto"><figcaption>${escape(image[1])}</figcaption></figure>`
         : `<p>${escape(line)}</p>`);
       i++; continue;
     }

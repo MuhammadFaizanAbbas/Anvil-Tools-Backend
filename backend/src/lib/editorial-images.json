@@ -1,0 +1,56 @@
+{
+  "/assets/images/editorial/background-removal-example.png": {
+    "width": 976,
+    "height": 566,
+    "candidates": [
+      {
+        "src": "/assets/images/editorial/background-removal-example-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/assets/images/editorial/background-removal-example-960.webp",
+        "width": 960
+      },
+      {
+        "src": "/assets/images/editorial/background-removal-example-976.webp",
+        "width": 976
+      }
+    ]
+  },
+  "/assets/images/editorial/temporary-email-example.png": {
+    "width": 976,
+    "height": 734,
+    "candidates": [
+      {
+        "src": "/assets/images/editorial/temporary-email-example-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/assets/images/editorial/temporary-email-example-960.webp",
+        "width": 960
+      },
+      {
+        "src": "/assets/images/editorial/temporary-email-example-976.webp",
+        "width": 976
+      }
+    ]
+  },
+  "/assets/images/editorial/pdf-ordering-example.png": {
+    "width": 976,
+    "height": 623,
+    "candidates": [
+      {
+        "src": "/assets/images/editorial/pdf-ordering-example-480.webp",
+        "width": 480
+      },
+      {
+        "src": "/assets/images/editorial/pdf-ordering-example-960.webp",
+        "width": 960
+      },
+      {
+        "src": "/assets/images/editorial/pdf-ordering-example-976.webp",
+        "width": 976
+      }
+    ]
+  }
+}

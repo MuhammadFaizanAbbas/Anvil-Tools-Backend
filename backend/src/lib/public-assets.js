@@ -1,5 +1,5 @@
 // Keep this release version in sync with frontend/public-assets.php.
-const PUBLIC_STYLE_VERSION = '20261005-review3';
+const PUBLIC_STYLE_VERSION = '20261005-review4';
 
 function versionPublicStyles(html) {
   return html.replace(/(href="[^"]*\bassets\/css\/(?:style|refinements|design|content)\.css)(?:\?[^"]*)?"/g, `$1?v=${PUBLIC_STYLE_VERSION}"`)

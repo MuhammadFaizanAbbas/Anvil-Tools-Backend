@@ -1,6 +1,15 @@
 const { escape, renderMarkdown } = require('./editorial-markdown');
 const { versionPublicStyles } = require('./public-assets');
 const exampleImages = require('./editorial-images.json');
+const { createHash } = require('node:crypto');
+const articleReviews = require('./article-reviews.json');
+
+function reviewFor(post) {
+  const review = articleReviews[post.slug];
+  const body = String(post.body || '').replace(/\r\n?/g, '\n').trim();
+  return review && review.body_sha256 === createHash('sha256').update(body).digest('hex')
+    && review.title === post.title && review.excerpt === post.excerpt ? review : null;
+}
 function imageUrl(post, siteOrigin) {
   if (/^\/assets\/images\/editorial\/[a-z0-9-]+\.(?:png|webp)$/.test(post.cover_path || '')) return siteOrigin + post.cover_path;
   return post.cover_image_id ? `${siteOrigin}/journal-images/${post.cover_image_id}` : null;
@@ -27,7 +36,7 @@ function renderFooter(siteOrigin) {
       </ul></div>
       <div><h3>Company</h3><ul>
         <li><a href="${base}/about.html">About</a></li>
-        <li><a href="${base}/blog/index.html">Blogs</a></li>
+        <li><a href="${base}/blog/index.html">Guides &amp; experiments</a></li>
         <li><a href="${base}/contact.html">Contact</a></li>
       </ul></div>
       <div><h3>Legal</h3><ul>
@@ -55,12 +64,13 @@ function renderArticle(post, siteOrigin) {
   const tags = post.tags || [];
   const rendered = renderMarkdown(post.body, { title: post.title });
   const words = Number.isSafeInteger(post.word_count) && post.word_count >= 0 ? post.word_count : String(post.body || '').trim().split(/\s+/).filter(Boolean).length;
-  const organization = { '@type': 'Organization', name: 'Anvil Tools', url: `${siteOrigin}/about.html` };
+  const review = reviewFor(post);
+  const organization = { '@type': 'Organization', name: 'VelloxTech editorial team', url: `${siteOrigin}/about.html#editorial-testing` };
   const ld = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description,
-    datePublished: post.published_at || undefined, dateModified: post.updated_at || undefined,
+    datePublished: post.published_at || undefined, dateModified: post.updated_at || review?.reviewed_at || undefined,
     image: image || undefined, mainEntityOfPage: canonical, keywords: tags.join(', '),
-    author: organization, publisher: organization, inLanguage: 'en', wordCount: words,
+    author: organization, publisher: { '@type': 'Organization', name: 'VelloxTech', url: `${siteOrigin}/about.html` }, inLanguage: 'en', wordCount: words,
     url: canonical
   }).replace(/</g, '\\u003c');
   return versionPublicStyles(`<!doctype html>
@@ -70,11 +80,11 @@ function renderArticle(post, siteOrigin) {
 ${image ? `<meta property="og:image" content="${escape(image)}"><meta property="og:image:alt" content="${escape(post.cover_alt || '')}"><meta name="twitter:image" content="${escape(image)}"><meta name="twitter:image:alt" content="${escape(post.cover_alt || '')}">` : ''}<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}">
 <link rel="icon" href="${siteOrigin}/assets/images/anvil-mark.svg"><link rel="stylesheet" href="${siteOrigin}/assets/css/style.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/refinements.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/design.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/content.css"><script type="application/ld+json">${ld}</script></head>
 <body class="public-site article-page"><noscript><style>.public-site .nav-toggle{display:none}.public-site .header-row{flex-wrap:wrap}.public-site .main-nav{display:flex;position:static;width:100%;flex-wrap:wrap;flex-direction:row;padding:8px 0;border:0;box-shadow:none}.public-site .main-nav a{width:auto}</style></noscript><a class="skip-link" href="#main-content">Skip to article</a>
-<header class="site-header"><div class="header-row"><a class="logo" href="${siteOrigin}/"><img src="${siteOrigin}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</a><button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">&#9776;</span></button><nav class="main-nav" id="main-navigation" aria-label="Main navigation"><a href="${siteOrigin}/">Home</a><a href="${siteOrigin}/tools/index.html">All tools</a><a aria-current="page" href="${siteOrigin}/blog/index.html">Blogs</a><a href="${siteOrigin}/about.html">About</a><a href="${siteOrigin}/contact.html">Contact</a></nav></div></header>
-<main class="wrap" id="main-content"><p class="breadcrumbs"><a href="${siteOrigin}/">Home</a> <span aria-hidden="true">/</span> <a href="${siteOrigin}/blog/index.html">Blogs</a></p>
-<article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Blog')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p><p class="article-meta">By <a href="${siteOrigin}/about.html" rel="author">Anvil Tools</a>${words ? ` · ${Math.max(1, Math.ceil(words / 220))} minute read` : ''}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time>${post.updated_at && post.updated_at.slice(0,10) !== post.published_at.slice(0,10) ? ` · Updated <time datetime="${escape(post.updated_at)}">${escape(post.updated_at.slice(0,10))}</time>` : ''}</p>` : ''}</header>
+<header class="site-header"><div class="header-row"><a class="logo" href="${siteOrigin}/"><img src="${siteOrigin}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</a><button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">&#9776;</span></button><nav class="main-nav" id="main-navigation" aria-label="Main navigation"><a href="${siteOrigin}/">Home</a><a href="${siteOrigin}/tools/index.html">All tools</a><a aria-current="page" href="${siteOrigin}/blog/index.html">Guides &amp; experiments</a><a href="${siteOrigin}/about.html">About</a><a href="${siteOrigin}/contact.html">Contact</a></nav></div></header>
+<main class="wrap" id="main-content"><p class="breadcrumbs"><a href="${siteOrigin}/">Home</a> <span aria-hidden="true">/</span> <a href="${siteOrigin}/blog/index.html">Guides &amp; experiments</a></p>
+<article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Guide')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p><p class="article-meta">By <a href="${siteOrigin}/about.html#editorial-testing" rel="author">VelloxTech editorial team</a>${words ? ` · ${Math.max(1, Math.ceil(words / 220))} minute read` : ''}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time>${post.updated_at && post.updated_at.slice(0,10) !== post.published_at.slice(0,10) ? ` · Updated <time datetime="${escape(post.updated_at)}">${escape(post.updated_at.slice(0,10))}</time>` : ''}</p>` : ''}${review ? `<p class="article-meta">Last reviewed <time datetime="${escape(review.reviewed_at)}">${escape(review.reviewed_at.slice(0,10))}</time></p>` : ''}<p class="article-meta"><a href="${siteOrigin}/about.html#editorial-testing">How we test examples and review content</a></p></header>
 ${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}"${imageDimensions} decoding="async" fetchpriority="high">` : ''}${rendered.toc}<div class="article-content">${rendered.html}</div>
-${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${siteOrigin}/blog/index.html">&#8592; Back to all blogs</a></article></main>
+${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${siteOrigin}/blog/index.html">&#8592; Back to guides &amp; experiments</a></article></main>
 ${renderFooter(siteOrigin)}<script src="${siteOrigin}/assets/js/main.js" defer></script></body></html>`);
 }
 

@@ -11,7 +11,7 @@ test('long guides have one title, unique anchors, and a working HTML outline', (
   for (const heading of rendered.headings) assert.ok(rendered.toc.includes(`href="#${heading.id}"`));
   const html = renderArticle({ slug: 'guide', title: 'Guide title', body }, 'https://example.test');
   assert.equal((html.match(/<h1>/g) || []).length, 1);
-  assert.match(html, /By <a[^>]+rel="author">Anvil Tools/);
+  assert.match(html, /By <a[^>]+rel="author">VelloxTech editorial team/);
   assert.doesNotMatch(html, /<h2[^>]*>Guide title/);
 });
 
@@ -24,6 +24,15 @@ test('markup preserves code and supports accessible tables without JavaScript', 
   assert.match(html, /&lt;script&gt;/);
   assert.match(html, /<th scope="col">Input<\/th>/);
   assert.match(html, /tabindex="0" role="region"/);
+});
+
+test('principal sections render as H2 with nested H3 and stable outline anchors', () => {
+  const rendered = renderMarkdown('# Guide\n\nIntroduction.\n\n## First\n\n### Detail\n\n## Second\n\n## Third\n\n## Fourth', { title: 'Guide' });
+  assert.deepEqual(rendered.headings.map(item => item.level), [2, 3, 2, 2, 2]);
+  assert.match(rendered.html, /<h2 id="first">First<\/h2><h3 id="detail">Detail<\/h3>/);
+  assert.match(rendered.toc, /href="#first"/);
+  assert.doesNotMatch(rendered.toc, /href="#detail"/);
+  assert.equal(renderMarkdown('```md\n# Example code\n```\n\n## Real section').headings[0].level, 2);
 });
 
 test('raw HTML and unsafe link destinations cannot execute', () => {

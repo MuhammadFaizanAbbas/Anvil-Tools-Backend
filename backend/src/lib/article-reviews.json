@@ -1,0 +1,50 @@
+{
+  "best-practices-for-temporary-email-when-working-with-signups": {
+    "title": "Temporary Email for Authorized Testing and Permitted Messages",
+    "excerpt": "Test email receipt in applications you own or are authorized to test, respect address restrictions, and understand provider retention and recovery limits.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "559c9468b31ddf26c1ac2c5a247ff4b6ceeb8237f97ea5be389c066ce1561212"
+  },
+  "best-practices-for-background-removal-when-working-with-design": {
+    "title": "Background Removal for Design and Product Photography",
+    "excerpt": "Prepare natural cutouts, inspect difficult edges, preserve product details, and export images for websites, design projects, and marketplace listings.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "23c60c0246af2820806a25d3f93a4db3ce8bae0d56779b8d79e1d29e19f3463a"
+  },
+  "simple-pdf-workflow-without-software": {
+    "title": "PDF Workflows: Merge Files, Convert Images, and Check the Result",
+    "excerpt": "Prepare readable images, assemble PDFs in the right order, and check page dimensions, protected files, forms, signatures, and the final download.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "8c0ebf798ce0c042ad636c9127e370bb42a25c0cece4a89c5e8d0690e06cc834"
+  },
+  "small-tools-that-save-developers-time": {
+    "title": "Debug API Data with JSON, Base64, and Browser Tools",
+    "excerpt": "Work through JSON types, encoding, URL components, JWT claims, hashes, CSV conversion, and timestamps with small reproducible examples.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "73da3600fdaa99033fa4b012b38226112b8355c061e02ba175182649f0f02ac2"
+  },
+  "json-formatter-edge-cases": {
+    "title": "10 Malformed JSON Inputs Tested in Our Formatter",
+    "excerpt": "Actual browser results for ten syntax errors, duplicate keys, and an integer that changes during formatting, with reusable inputs.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "ffbfaf9e8cf619d7be6d40b090d33754b67f66057489425087146fb77d5fab23"
+  },
+  "csv-quotes-unicode-and-blank-fields": {
+    "title": "CSV Edge Cases: Quotes, Unicode, Newlines, and Blank Fields",
+    "excerpt": "Thirteen recorded CSV conversions show preserved strings, rejected headers, quoted newlines, and a semicolon-delimiter trap.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "3f7ed282b7e288f7003097b64e11bd5259c596f9976b04c3e2fc307178f463d2"
+  },
+  "word-counter-unicode-experiment": {
+    "title": "How Our Word Counter Counts Emoji, Accents, and Chinese Text",
+    "excerpt": "Twelve measured examples explain whitespace words, UTF-16 characters, combining accents, emoji, and rough reading-time estimates.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "b3da987c79d6910a0b7fd5e6a6afa014abe068ace0757c1d2a975504070471f6"
+  },
+  "jpeg-png-webp-to-pdf-test": {
+    "title": "JPEG vs PNG vs WebP: Our Image-to-PDF Conversion Test",
+    "excerpt": "The same 640 by 400 illustration converted from three formats, with actual downloads, independent PDF inspection, and transparency limits.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "da55b48cea57b2420678b60b7a7c57f1af14e0e35d31515819f5d06375c8887f"
+  }
+}

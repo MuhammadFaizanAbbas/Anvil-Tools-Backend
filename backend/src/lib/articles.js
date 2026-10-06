@@ -1,6 +1,8 @@
 const { escape, renderMarkdown } = require('./editorial-markdown');
 const { versionPublicStyles } = require('./public-assets');
+const exampleImages = require('./editorial-images.json');
 function imageUrl(post, siteOrigin) {
+  if (/^\/assets\/images\/editorial\/[a-z0-9-]+\.(?:png|webp)$/.test(post.cover_path || '')) return siteOrigin + post.cover_path;
   return post.cover_image_id ? `${siteOrigin}/journal-images/${post.cover_image_id}` : null;
 }
 
@@ -45,8 +47,11 @@ function renderFooter(siteOrigin) {
 function renderArticle(post, siteOrigin) {
   const canonical = `${siteOrigin}/journal/${encodeURIComponent(post.slug)}`;
   const title = post.seo_title || post.title;
-  const description = post.seo_description || post.excerpt;
+  const rawDescription = post.seo_description || post.excerpt || '';
+  const description = rawDescription.includes('Anvil Tools') ? rawDescription : `Anvil Tools: ${rawDescription}`;
   const image = imageUrl(post, siteOrigin);
+  const imageSize = exampleImages[post.cover_path];
+  const imageDimensions = imageSize ? ` width="${imageSize.width}" height="${imageSize.height}"` : '';
   const tags = post.tags || [];
   const rendered = renderMarkdown(post.body, { title: post.title });
   const words = Number.isSafeInteger(post.word_count) && post.word_count >= 0 ? post.word_count : String(post.body || '').trim().split(/\s+/).filter(Boolean).length;
@@ -61,14 +66,14 @@ function renderArticle(post, siteOrigin) {
   return versionPublicStyles(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escape(title)} | Anvil Tools</title><meta name="description" content="${escape(description)}"><link rel="canonical" href="${escape(canonical)}">
-<meta property="og:type" content="article"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${escape(canonical)}">
+<meta property="og:type" content="article"><meta property="og:title" content="${escape(title)} | Anvil Tools"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${escape(canonical)}">
 ${image ? `<meta property="og:image" content="${escape(image)}"><meta property="og:image:alt" content="${escape(post.cover_alt || '')}"><meta name="twitter:image" content="${escape(image)}"><meta name="twitter:image:alt" content="${escape(post.cover_alt || '')}">` : ''}<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}">
 <link rel="icon" href="${siteOrigin}/assets/images/anvil-mark.svg"><link rel="stylesheet" href="${siteOrigin}/assets/css/style.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/refinements.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/design.css"><link rel="stylesheet" href="${siteOrigin}/assets/css/content.css"><script type="application/ld+json">${ld}</script></head>
 <body class="public-site article-page"><noscript><style>.public-site .nav-toggle{display:none}.public-site .header-row{flex-wrap:wrap}.public-site .main-nav{display:flex;position:static;width:100%;flex-wrap:wrap;flex-direction:row;padding:8px 0;border:0;box-shadow:none}.public-site .main-nav a{width:auto}</style></noscript><a class="skip-link" href="#main-content">Skip to article</a>
 <header class="site-header"><div class="header-row"><a class="logo" href="${siteOrigin}/"><img src="${siteOrigin}/assets/images/anvil-mark.svg" width="36" height="36" alt="">Anvil Tools</a><button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-navigation"><span aria-hidden="true">&#9776;</span></button><nav class="main-nav" id="main-navigation" aria-label="Main navigation"><a href="${siteOrigin}/">Home</a><a href="${siteOrigin}/tools/index.html">All tools</a><a aria-current="page" href="${siteOrigin}/blog/index.html">Blogs</a><a href="${siteOrigin}/about.html">About</a><a href="${siteOrigin}/contact.html">Contact</a></nav></div></header>
 <main class="wrap" id="main-content"><p class="breadcrumbs"><a href="${siteOrigin}/">Home</a> <span aria-hidden="true">/</span> <a href="${siteOrigin}/blog/index.html">Blogs</a></p>
 <article class="published-article"><header class="article-header"><span class="eyebrow">${escape(post.category_slug || 'Blog')}</span><h1>${escape(post.title)}</h1><p class="lede">${escape(post.excerpt || '')}</p><p class="article-meta">By <a href="${siteOrigin}/about.html" rel="author">Anvil Tools</a>${words ? ` · ${Math.max(1, Math.ceil(words / 220))} minute read` : ''}</p>${post.published_at ? `<p class="article-meta">Published <time datetime="${escape(post.published_at)}">${escape(post.published_at.slice(0, 10))}</time>${post.updated_at && post.updated_at.slice(0,10) !== post.published_at.slice(0,10) ? ` · Updated <time datetime="${escape(post.updated_at)}">${escape(post.updated_at.slice(0,10))}</time>` : ''}</p>` : ''}</header>
-${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}" decoding="async" fetchpriority="high">` : ''}${rendered.toc}<div class="article-content">${rendered.html}</div>
+${image ? `<img class="article-cover" src="${escape(image)}" alt="${escape(post.cover_alt || '')}"${imageDimensions} decoding="async" fetchpriority="high">` : ''}${rendered.toc}<div class="article-content">${rendered.html}</div>
 ${tags.length ? `<div class="article-tags" aria-label="Topics">${tags.map(tag => `<span class="chip">${escape(tag)}</span>`).join('')}</div>` : ''}<a class="article-return" href="${siteOrigin}/blog/index.html">&#8592; Back to all blogs</a></article></main>
 ${renderFooter(siteOrigin)}<script src="${siteOrigin}/assets/js/main.js" defer></script></body></html>`);
 }

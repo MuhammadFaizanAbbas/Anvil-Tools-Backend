@@ -19,8 +19,9 @@ function renderBlog(posts, siteOrigin, { page = 1, hasNext = false, unavailable 
     .replace('<!-- published-status -->', unavailable ? 'Latest articles are temporarily unavailable. The practical guides below are still available.' : posts.length ? '' : 'No additional articles published yet. Explore the practical guides below.');
   if (!unavailable && posts.length) html = html.replace(/<!-- editorial-library -->[\s\S]*?<!-- \/editorial-library -->/, '');
   const previous = page === 2 ? '/blog/index.html' : `/blog/index.html?page=${page - 1}`;
-  const nav = `<a class="btn" id="blogsPrev"${page > 1 ? ` href="${previous}" rel="prev"` : ' hidden'}>Previous</a><span id="blogsPage" aria-live="polite">Page ${page}</span><a class="btn" id="blogsNext"${hasNext ? ` href="/blog/index.html?page=${page + 1}" rel="next"` : ' hidden'}>Next</a>`;
-  html = html.replace(/<!-- blog-pagination -->[\s\S]*?<!-- \/blog-pagination -->/, `<nav class="blog-pagination" id="blogPagination" aria-label="Article pages"${page === 1 && !hasNext ? ' hidden' : ''}>${nav}</nav>`);
+  const nav = `${page > 1 ? `<a class="btn" id="blogsPrev" href="${previous}" rel="prev">Previous</a>` : ''}<span id="blogsPage">Page ${page}</span>${hasNext ? `<a class="btn" id="blogsNext" href="/blog/index.html?page=${page + 1}" rel="next">Next</a>` : ''}`;
+  html = html.replace(/<!-- blog-pagination -->[\s\S]*?<!-- \/blog-pagination -->/, unavailable ? '<nav class="blog-pagination" id="blogPagination" aria-label="Article pages" hidden></nav>' : page > 1 || hasNext ? `<nav class="blog-pagination" id="blogPagination" aria-label="Article pages">${nav}</nav>` : '');
+  html = html.replace('<!-- blog-retry -->', unavailable ? '<button class="btn" id="blogsRetry" type="button">Try again</button>' : '');
   if (page > 1) {
     const canonical = `${siteOrigin}/blog/index.html`;
     html = html.replace(`rel="canonical" href="${canonical}"`, `rel="canonical" href="${canonical}?page=${page}"`)

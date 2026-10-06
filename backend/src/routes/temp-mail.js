@@ -9,7 +9,7 @@ const mailDate=value=>{const time=Number(value)*1000;return Number.isFinite(time
 const isProviderWelcome=message=>String(message?.mail_from||'').trim().toLowerCase()==='no-reply@guerrillamail.com'&&/^welcome to guerrilla mail$/i.test(String(message?.mail_subject||'').trim());
 const client=req=>({ip:process.env.VERCEL?req.get('x-vercel-forwarded-for'):req.socket.remoteAddress,agent:req.get('User-Agent')||''});
 const authorize=run(async(req,res,next)=>{
- const cap=req.query.cap||req.body?.cap;
+ const cap=req.get('X-Inbox-Capability')||req.query.cap||req.body?.cap;
  if(typeof cap!=='string'||!/^[a-f0-9]{64}$/.test(cap))return res.status(404).json({error:'Invalid inbox'});
  const row=unwrap(await db.from('temp_mail_sessions').select('*').eq('capability',cap).maybeSingle());
  if(!row)return res.status(404).json({error:'Inbox unavailable'});

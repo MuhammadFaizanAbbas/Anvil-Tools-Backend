@@ -5,9 +5,11 @@ const { supabaseAdmin: db } = require('../lib/supabase');
 const { requireAdmin } = require('../middleware/auth');
 const run = require('../lib/async-handler');
 const { prepareImage } = require('../lib/images');
+const { ensurePrivateMedia } = require('../lib/private-media');
 const unwrap = result => { if (result.error) throw result.error; return result.data; };
 const bucket = () => db.storage.from('editorial-media');
 router.use(requireAdmin);
+router.use(run(async (req, res, next) => { await ensurePrivateMedia(); next(); }));
 router.get('/', run(async (req, res) => {
   const page = Math.max(0, Math.min(10000, parseInt(req.query.page, 10) || 0));
   const result = await db.from('media_assets').select('*', { count: 'exact' }).order('created_at', { ascending: false }).range(page * 24, page * 24 + 23);

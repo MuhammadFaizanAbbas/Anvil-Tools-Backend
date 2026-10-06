@@ -9,7 +9,10 @@
     "dev:api": "node --watch server.js",
     "dev:frontend": "node scripts/serve-frontend.js",
     "test": "node --test tests/*.test.js",
-    "verify": "node verify.js"
+    "verify": "node verify.js",
+    "sitemap": "node scripts/build-sitemap.js",
+    "build:editorial": "node scripts/build-editorial.js && node scripts/build-sitemap.js",
+    "audit:crawl": "node scripts/check-crawl-readiness.js"
   },
   "keywords": [
     "static-site",

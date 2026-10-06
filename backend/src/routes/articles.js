@@ -6,6 +6,7 @@ const {requestSiteOrigin}=require('../lib/site-origin');
 const {PAGE_SIZE,blogPage,renderBlog}=require('../lib/blog');
 const redirects=require('../lib/article-redirects.json');
 const {renderUnavailable}=require('../lib/retired-article');
+const {ensurePrivateMedia}=require('../lib/private-media');
 const unwrap=result=>{if(result.error)throw result.error;return result.data;};
 router.get('/blog',run(async(req,res)=>{
  const page=blogPage(req.query.page);
@@ -37,6 +38,7 @@ router.get('/post-images/:id',run(async(req,res)=>{
  if(!posts.length)return res.sendStatus(404);
  const asset=unwrap(await db.from('media_assets').select('storage_path,mime_type').eq('id',req.params.id).maybeSingle());
  if(!asset)return res.sendStatus(404);
+ await ensurePrivateMedia();
  const blob=unwrap(await db.storage.from('editorial-media').download(asset.storage_path));
  const normalize=value=>String(value||'').split(';')[0].trim().toLowerCase().replace(/^image\/jpg$/,'image/jpeg');
  const supported=new Set(['image/svg+xml','image/png','image/jpeg','image/webp','image/gif','image/avif','image/bmp','image/x-icon']);

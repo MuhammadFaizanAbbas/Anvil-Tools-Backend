@@ -31,6 +31,18 @@ function renderMarkdown(body, options = {}) {
   const lines = String(body || '').replace(/\r\n?/g, '\n').trim().split('\n');
   const headings = [], ids = new Map(), output = [];
   const hasMarkdownHeadings = lines.some(line => /^#{1,6}\s+/.test(line));
+  // The page supplies H1. Normalize the first section level to H2 while
+  // preserving nested sections in both current Markdown and legacy handbooks.
+  let inFence = false;
+  const sectionLevels = [];
+  for (const [index, line] of lines.entries()) {
+    if (/^```/.test(line.trim())) { inFence = !inFence; continue; }
+    if (inFence) continue;
+    const match = line.trim().match(/^(#{1,6})\s+(.+)$/);
+    if (!match || (index === 0 && match[2].replace(/[*`]/g, '').trim() === options.title)) continue;
+    sectionLevels.push(match[1].length);
+  }
+  const sectionOffset = 2 - (sectionLevels.length ? Math.min(...sectionLevels) : 2);
   const heading = (level, text) => {
     const label = text.replace(/[*`]/g, '').trim();
     const base = label.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
@@ -63,7 +75,7 @@ function renderMarkdown(body, options = {}) {
     if (match) {
       i++;
       if (!output.length && match[2].replace(/[*`]/g, '').trim() === options.title) continue;
-      output.push(heading(Math.min(match[1].length + 1, 6), match[2])); continue;
+      output.push(heading(Math.min(match[1].length + sectionOffset, 6), match[2])); continue;
     }
     if (/^(?:---+|\*\*\*+)\s*$/.test(line)) { output.push('<hr>'); i++; continue; }
     if (line.startsWith('|') && /^\|?\s*:?-{3,}/.test((lines[i+1] || '').trim())) {

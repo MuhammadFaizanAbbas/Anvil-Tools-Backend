@@ -15,7 +15,7 @@
     "title": "Debug API Data with JSON, Base64, and Browser Tools",
     "excerpt": "Work through JSON types, encoding, URL components, JWT claims, hashes, CSV conversion, and timestamps with small reproducible examples.",
     "reviewed_at": "2026-10-07",
-    "body_sha256": "73da3600fdaa99033fa4b012b38226112b8355c061e02ba175182649f0f02ac2"
+    "body_sha256": "193d3afd1cabe5aaa7eeaa0fd9b3958f5d16c6c87b2269a49b0399e2f623e313"
   },
   "json-formatter-edge-cases": {
     "title": "10 Malformed JSON Inputs Tested in Our Formatter",

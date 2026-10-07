@@ -72,7 +72,7 @@ function renderArticle(post, siteOrigin) {
   const ld = JSON.stringify({
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description,
     datePublished: post.published_at || undefined, dateModified: post.updated_at || review?.reviewed_at || undefined,
-    image: image || undefined, mainEntityOfPage: canonical, keywords: tags.join(', '),
+    image: image || undefined, mainEntityOfPage: canonical, keywords: tags.join(', ') || undefined,
     author: organization, publisher: { '@type': 'Organization', name: 'VelloxTech', url: `${siteOrigin}/about.html` }, inLanguage: 'en', wordCount: words,
     url: canonical
   }).replace(/</g, '\\u003c');

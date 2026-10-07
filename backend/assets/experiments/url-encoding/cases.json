@@ -1,0 +1,107 @@
+[
+  {
+    "id": "space-plus-unicode",
+    "mode": "component",
+    "action": "encode",
+    "input": "red shoes + café",
+    "expected": "red%20shoes%20%2B%20caf%C3%A9"
+  },
+  {
+    "id": "decode-literal-plus",
+    "mode": "component",
+    "action": "decode",
+    "input": "a+b%20c",
+    "expected": "a+b c"
+  },
+  {
+    "id": "decode-encoded-plus",
+    "mode": "component",
+    "action": "decode",
+    "input": "a%2Bb%20c",
+    "expected": "a+b c"
+  },
+  {
+    "id": "encode-percent-again",
+    "mode": "component",
+    "action": "encode",
+    "input": "%20",
+    "expected": "%2520"
+  },
+  {
+    "id": "decode-once",
+    "mode": "component",
+    "action": "decode",
+    "input": "%2520",
+    "expected": "%20"
+  },
+  {
+    "id": "path-segment",
+    "mode": "component",
+    "action": "encode",
+    "input": "reports/2026 #1",
+    "expected": "reports%2F2026%20%231"
+  },
+  {
+    "id": "full-url",
+    "mode": "url",
+    "action": "encode",
+    "input": "https://example.com/search?q=red shoes&tag=a+b#section 1",
+    "expected": "https://example.com/search?q=red%20shoes&tag=a+b#section%201"
+  },
+  {
+    "id": "value-reserved",
+    "mode": "component",
+    "action": "encode",
+    "input": "tea & coffee=2",
+    "expected": "tea%20%26%20coffee%3D2"
+  },
+  {
+    "id": "full-url-ampersand-trap",
+    "mode": "url",
+    "action": "encode",
+    "input": "https://example.com/search?q=tea & coffee",
+    "expected": "https://example.com/search?q=tea%20&%20coffee"
+  },
+  {
+    "id": "decode-reserved-component",
+    "mode": "component",
+    "action": "decode",
+    "input": "%2F%3F%26%3D%23",
+    "expected": "/?&=#"
+  },
+  {
+    "id": "decode-reserved-full-url",
+    "mode": "url",
+    "action": "decode",
+    "input": "%2F%3F%26%3D%23",
+    "expected": "%2F%3F%26%3D%23"
+  },
+  {
+    "id": "punctuation",
+    "mode": "component",
+    "action": "encode",
+    "input": "!~*'()",
+    "expected": "!~*'()"
+  },
+  {
+    "id": "malformed-percent",
+    "mode": "component",
+    "action": "decode",
+    "input": "%ZZ",
+    "expected": null
+  },
+  {
+    "id": "incomplete-utf8",
+    "mode": "component",
+    "action": "decode",
+    "input": "%C3",
+    "expected": null
+  },
+  {
+    "id": "unicode-emoji",
+    "mode": "component",
+    "action": "encode",
+    "input": "你好 🙂",
+    "expected": "%E4%BD%A0%E5%A5%BD%20%F0%9F%99%82"
+  }
+]

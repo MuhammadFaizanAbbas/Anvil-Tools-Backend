@@ -1,0 +1,350 @@
+{
+  "checkedAt": "2026-10-07T16:25:40.092Z",
+  "method": "Actual Anvil browser controls; synthetic inputs; independent Node crypto digest comparison.",
+  "runs": [
+    {
+      "browser": "chrome.exe",
+      "version": "154.0.8037.97",
+      "cases": [
+        {
+          "id": "space-plus-unicode",
+          "mode": "component",
+          "action": "encode",
+          "input": "red shoes + café",
+          "expected": "red%20shoes%20%2B%20caf%C3%A9",
+          "output": "red%20shoes%20%2B%20caf%C3%A9",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-literal-plus",
+          "mode": "component",
+          "action": "decode",
+          "input": "a+b%20c",
+          "expected": "a+b c",
+          "output": "a+b c",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-encoded-plus",
+          "mode": "component",
+          "action": "decode",
+          "input": "a%2Bb%20c",
+          "expected": "a+b c",
+          "output": "a+b c",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "encode-percent-again",
+          "mode": "component",
+          "action": "encode",
+          "input": "%20",
+          "expected": "%2520",
+          "output": "%2520",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-once",
+          "mode": "component",
+          "action": "decode",
+          "input": "%2520",
+          "expected": "%20",
+          "output": "%20",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "path-segment",
+          "mode": "component",
+          "action": "encode",
+          "input": "reports/2026 #1",
+          "expected": "reports%2F2026%20%231",
+          "output": "reports%2F2026%20%231",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "full-url",
+          "mode": "url",
+          "action": "encode",
+          "input": "https://example.com/search?q=red shoes&tag=a+b#section 1",
+          "expected": "https://example.com/search?q=red%20shoes&tag=a+b#section%201",
+          "output": "https://example.com/search?q=red%20shoes&tag=a+b#section%201",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "value-reserved",
+          "mode": "component",
+          "action": "encode",
+          "input": "tea & coffee=2",
+          "expected": "tea%20%26%20coffee%3D2",
+          "output": "tea%20%26%20coffee%3D2",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "full-url-ampersand-trap",
+          "mode": "url",
+          "action": "encode",
+          "input": "https://example.com/search?q=tea & coffee",
+          "expected": "https://example.com/search?q=tea%20&%20coffee",
+          "output": "https://example.com/search?q=tea%20&%20coffee",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-reserved-component",
+          "mode": "component",
+          "action": "decode",
+          "input": "%2F%3F%26%3D%23",
+          "expected": "/?&=#",
+          "output": "/?&=#",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-reserved-full-url",
+          "mode": "url",
+          "action": "decode",
+          "input": "%2F%3F%26%3D%23",
+          "expected": "%2F%3F%26%3D%23",
+          "output": "%2F%3F%26%3D%23",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "punctuation",
+          "mode": "component",
+          "action": "encode",
+          "input": "!~*'()",
+          "expected": "!~*'()",
+          "output": "!~*'()",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "malformed-percent",
+          "mode": "component",
+          "action": "decode",
+          "input": "%ZZ",
+          "expected": null,
+          "output": "",
+          "status": "This value contains malformed percent encoding or invalid UTF-8.",
+          "passed": true
+        },
+        {
+          "id": "incomplete-utf8",
+          "mode": "component",
+          "action": "decode",
+          "input": "%C3",
+          "expected": null,
+          "output": "",
+          "status": "This value contains malformed percent encoding or invalid UTF-8.",
+          "passed": true
+        },
+        {
+          "id": "unicode-emoji",
+          "mode": "component",
+          "action": "encode",
+          "input": "你好 🙂",
+          "expected": "%E4%BD%A0%E5%A5%BD%20%F0%9F%99%82",
+          "output": "%E4%BD%A0%E5%A5%BD%20%F0%9F%99%82",
+          "status": "Encoded successfully.",
+          "passed": true
+        }
+      ],
+      "queryParsing": {
+        "formPlus": "a b c",
+        "encodedPlus": "a+b c",
+        "serialized": "q=red+shoes+%2B+caf%C3%A9",
+        "parsedSerialized": "red shoes + café",
+        "extraParameters": [
+          [
+            "q",
+            "tea "
+          ],
+          [
+            " coffee",
+            ""
+          ]
+        ]
+      }
+    },
+    {
+      "browser": "msedge.exe",
+      "version": "154.0.4258.53",
+      "cases": [
+        {
+          "id": "space-plus-unicode",
+          "mode": "component",
+          "action": "encode",
+          "input": "red shoes + café",
+          "expected": "red%20shoes%20%2B%20caf%C3%A9",
+          "output": "red%20shoes%20%2B%20caf%C3%A9",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-literal-plus",
+          "mode": "component",
+          "action": "decode",
+          "input": "a+b%20c",
+          "expected": "a+b c",
+          "output": "a+b c",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-encoded-plus",
+          "mode": "component",
+          "action": "decode",
+          "input": "a%2Bb%20c",
+          "expected": "a+b c",
+          "output": "a+b c",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "encode-percent-again",
+          "mode": "component",
+          "action": "encode",
+          "input": "%20",
+          "expected": "%2520",
+          "output": "%2520",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-once",
+          "mode": "component",
+          "action": "decode",
+          "input": "%2520",
+          "expected": "%20",
+          "output": "%20",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "path-segment",
+          "mode": "component",
+          "action": "encode",
+          "input": "reports/2026 #1",
+          "expected": "reports%2F2026%20%231",
+          "output": "reports%2F2026%20%231",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "full-url",
+          "mode": "url",
+          "action": "encode",
+          "input": "https://example.com/search?q=red shoes&tag=a+b#section 1",
+          "expected": "https://example.com/search?q=red%20shoes&tag=a+b#section%201",
+          "output": "https://example.com/search?q=red%20shoes&tag=a+b#section%201",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "value-reserved",
+          "mode": "component",
+          "action": "encode",
+          "input": "tea & coffee=2",
+          "expected": "tea%20%26%20coffee%3D2",
+          "output": "tea%20%26%20coffee%3D2",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "full-url-ampersand-trap",
+          "mode": "url",
+          "action": "encode",
+          "input": "https://example.com/search?q=tea & coffee",
+          "expected": "https://example.com/search?q=tea%20&%20coffee",
+          "output": "https://example.com/search?q=tea%20&%20coffee",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-reserved-component",
+          "mode": "component",
+          "action": "decode",
+          "input": "%2F%3F%26%3D%23",
+          "expected": "/?&=#",
+          "output": "/?&=#",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "decode-reserved-full-url",
+          "mode": "url",
+          "action": "decode",
+          "input": "%2F%3F%26%3D%23",
+          "expected": "%2F%3F%26%3D%23",
+          "output": "%2F%3F%26%3D%23",
+          "status": "Decoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "punctuation",
+          "mode": "component",
+          "action": "encode",
+          "input": "!~*'()",
+          "expected": "!~*'()",
+          "output": "!~*'()",
+          "status": "Encoded successfully.",
+          "passed": true
+        },
+        {
+          "id": "malformed-percent",
+          "mode": "component",
+          "action": "decode",
+          "input": "%ZZ",
+          "expected": null,
+          "output": "",
+          "status": "This value contains malformed percent encoding or invalid UTF-8.",
+          "passed": true
+        },
+        {
+          "id": "incomplete-utf8",
+          "mode": "component",
+          "action": "decode",
+          "input": "%C3",
+          "expected": null,
+          "output": "",
+          "status": "This value contains malformed percent encoding or invalid UTF-8.",
+          "passed": true
+        },
+        {
+          "id": "unicode-emoji",
+          "mode": "component",
+          "action": "encode",
+          "input": "你好 🙂",
+          "expected": "%E4%BD%A0%E5%A5%BD%20%F0%9F%99%82",
+          "output": "%E4%BD%A0%E5%A5%BD%20%F0%9F%99%82",
+          "status": "Encoded successfully.",
+          "passed": true
+        }
+      ],
+      "queryParsing": {
+        "formPlus": "a b c",
+        "encodedPlus": "a+b c",
+        "serialized": "q=red+shoes+%2B+caf%C3%A9",
+        "parsedSerialized": "red shoes + café",
+        "extraParameters": [
+          [
+            "q",
+            "tea "
+          ],
+          [
+            " coffee",
+            ""
+          ]
+        ]
+      }
+    }
+  ]
+}

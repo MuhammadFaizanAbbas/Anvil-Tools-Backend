@@ -3,6 +3,7 @@ const { versionPublicStyles } = require('./public-assets');
 const exampleImages = require('./editorial-images.json');
 const { createHash } = require('node:crypto');
 const articleReviews = require('./article-reviews.json');
+const coverVersions = require('./editorial-cover-versions.json');
 
 function reviewFor(post) {
   const review = articleReviews[post.slug];
@@ -12,7 +13,9 @@ function reviewFor(post) {
 }
 function imageUrl(post, siteOrigin) {
   if (/^\/assets\/images\/editorial\/[a-z0-9-]+\.(?:png|webp)$/.test(post.cover_path || '')) return siteOrigin + post.cover_path;
-  return post.cover_image_id ? `${siteOrigin}/journal-images/${post.cover_image_id}` : null;
+  if (!post.cover_image_id) return null;
+  const version = Object.hasOwn(coverVersions, post.cover_image_id) ? coverVersions[post.cover_image_id] : null;
+  return `${siteOrigin}/journal-images/${post.cover_image_id}${version ? `?v=${version}` : ''}`;
 }
 
 function renderBody(body) {

@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const { escape } = require('./articles');
+const { escape, imageUrl } = require('./articles');
 const { versionPublicStyles } = require('./public-assets');
 
 const PAGE_SIZE = 30;
@@ -13,7 +13,7 @@ function blogPage(value = '1') {
 function renderBlog(posts, siteOrigin, { page = 1, hasNext = false, unavailable = false } = {}) {
   let html = fs.readFileSync(path.join(__dirname, '../templates/blog.html'), 'utf8')
     .replaceAll('https://anviltools.vercel.app', siteOrigin);
-  const cards = posts.map(post => `<article class="tool-card">${post.cover_image_id ? `<img class="guide-cover" src="${escape(siteOrigin)}/journal-images/${encodeURIComponent(post.cover_image_id)}" alt="${escape(post.cover_alt || '')}" loading="lazy">` : ''}<h2><a href="/journal/${encodeURIComponent(post.slug)}">${escape(post.title)}</a></h2><p>${escape(post.excerpt || '')}</p><a class="tool-link" href="/journal/${encodeURIComponent(post.slug)}">Read guide &#8594;</a></article>`).join('\n');
+  const cards = posts.map(post => `<article class="tool-card">${post.cover_image_id ? `<img class="guide-cover" src="${escape(imageUrl(post, siteOrigin))}" alt="${escape(post.cover_alt || '')}" loading="lazy">` : ''}<h2><a href="/journal/${encodeURIComponent(post.slug)}">${escape(post.title)}</a></h2><p>${escape(post.excerpt || '')}</p><a class="tool-link" href="/journal/${encodeURIComponent(post.slug)}">Read guide &#8594;</a></article>`).join('\n');
   html = html.replace('<!-- published-cards -->', cards)
     .replace('id="publishedGuideCards"', `id="publishedGuideCards" data-server-rendered="${!unavailable}" data-page="${page}" data-has-next="${hasNext}"`)
     .replace('<!-- published-status -->', unavailable ? 'Latest articles are temporarily unavailable. The practical guides below are still available.' : posts.length ? '' : 'No additional articles published yet. Explore the practical guides below.');

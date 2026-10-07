@@ -1,10 +1,4 @@
 {
-  "best-practices-for-temporary-email-when-working-with-signups": {
-    "title": "Temporary Email for Authorized Testing and Permitted Messages",
-    "excerpt": "Test email receipt in applications you own or are authorized to test, respect address restrictions, and understand provider retention and recovery limits.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "559c9468b31ddf26c1ac2c5a247ff4b6ceeb8237f97ea5be389c066ce1561212"
-  },
   "best-practices-for-background-removal-when-working-with-design": {
     "title": "Background Removal for Design and Product Photography",
     "excerpt": "Prepare natural cutouts, inspect difficult edges, preserve product details, and export images for websites, design projects, and marketplace listings.",
@@ -46,5 +40,11 @@
     "excerpt": "The same 640 by 400 illustration converted from three formats, with actual downloads, independent PDF inspection, and transparency limits.",
     "reviewed_at": "2026-10-07",
     "body_sha256": "da55b48cea57b2420678b60b7a7c57f1af14e0e35d31515819f5d06375c8887f"
+  },
+  "temporary-email-for-authorized-testing-and-permitted-messages": {
+    "title": "Temporary Email for Authorized Testing and Permitted Messages",
+    "excerpt": "Test email receipt in applications you own or are authorized to test, respect address restrictions, and understand provider retention and recovery limits.",
+    "reviewed_at": "2026-10-07",
+    "body_sha256": "bd11a3b766a2122da49afaefe816f00f15996a79f2994ef2f3527a4cc2065640"
   }
 }

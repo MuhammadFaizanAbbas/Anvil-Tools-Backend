@@ -28,7 +28,13 @@ router.get('/articles/:slug',run(async(req,res)=>{
  const target=Object.hasOwn(redirects,req.params.slug)?redirects[req.params.slug]:null;
  if(Object.hasOwn(redirects,req.params.slug)&&target===null)return res.set('X-Robots-Tag','noindex, follow').set('Cache-Control','no-store').status(410).type('html').send(renderUnavailable(siteOrigin,true));
  if(target){res.removeHeader('X-Robots-Tag');return res.set('Cache-Control','no-store').redirect(301,`${siteOrigin}/journal/${target}`);}
- const post=unwrap(await db.from('posts').select('*').eq('slug',req.params.slug).eq('status','published').maybeSingle());
+ let post=unwrap(await db.from('posts').select('*').eq('slug',req.params.slug).eq('status','published').maybeSingle());
+ // Keep the new canonical URL available while the guarded data rename rolls out.
+ const legacyGuide='best-practices-for-temporary-email-when-working-with-signups';
+ if(!post&&req.params.slug===redirects[legacyGuide]){
+  post=unwrap(await db.from('posts').select('*').eq('slug',legacyGuide).eq('status','published').maybeSingle());
+  if(post)post={...post,slug:req.params.slug};
+ }
  if(!post)return res.set('X-Robots-Tag','noindex, follow').status(404).type('html').send(renderUnavailable(siteOrigin));
  res.removeHeader('X-Robots-Tag');res.set('Cache-Control','no-store').type('html').send(renderArticle(post,siteOrigin));
 }));

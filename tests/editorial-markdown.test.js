@@ -11,8 +11,10 @@ test('long guides have one title, unique anchors, and a working HTML outline', (
   for (const heading of rendered.headings) assert.ok(rendered.toc.includes(`href="#${heading.id}"`));
   const html = renderArticle({ slug: 'guide', title: 'Guide title', body }, 'https://example.test');
   assert.equal((html.match(/<h1>/g) || []).length, 1);
-  assert.match(html, /By <a[^>]+rel="author">VelloxTech editorial team/);
+  assert.match(html, /Written by: <a[^>]+rel="author">VelloxTech Editorial Team/);
   assert.doesNotMatch(html, /<h2[^>]*>Guide title/);
+  const structuredData = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(Object.hasOwn(structuredData, 'keywords'), false);
 });
 
 test('markup preserves code and supports accessible tables without JavaScript', () => {

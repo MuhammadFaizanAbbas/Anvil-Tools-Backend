@@ -1,62 +1,182 @@
 {
-  "best-practices-for-background-removal-when-working-with-design": {
-    "title": "Background Removal for Design and Product Photography",
-    "excerpt": "Prepare natural cutouts, inspect difficult edges, preserve product details, and export images for websites, design projects, and marketplace listings.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "23c60c0246af2820806a25d3f93a4db3ce8bae0d56779b8d79e1d29e19f3463a"
+  "why-html-emails-look-different-plain-text-css-mime": {
+    "title": "Why HTML Emails Look Different Across Inboxes: Plain Text, Images, CSS, and MIME",
+    "excerpt": "Why do HTML emails lose images, buttons, or formatting? Understand MIME, plain-text alternatives, CSS support, and safe email testing.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "2b0e16f833bd169c5e5119765c0815ac79e2e13fe4661fbf51aef273b09695a8"
   },
-  "simple-pdf-workflow-without-software": {
-    "title": "PDF Workflows: Merge Files, Convert Images, and Check the Result",
-    "excerpt": "Prepare readable images, assemble PDFs in the right order, and check page dimensions, protected files, forms, signatures, and the final download.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "8c0ebf798ce0c042ad636c9127e370bb42a25c0cece4a89c5e8d0690e06cc834"
+  "safe-filename-rules-windows-macos-web": {
+    "title": "Why Filenames Work on One Device but Fail on Another: Safe Naming Across Windows, macOS, and the Web",
+    "excerpt": "Why do filenames fail across Windows, Mac, Linux, or websites? Learn about invalid characters, reserved names, case sensitivity, extensions, and safe naming.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "ce224d5fc3c28e41578312f8c049400bb7bcc34a85c61fb59f8ccb7cd4f0a308"
   },
-  "small-tools-that-save-developers-time": {
-    "title": "Debug API Data with JSON, Base64, and Browser Tools",
-    "excerpt": "Work through JSON types, encoding, URL components, JWT claims, hashes, CSV conversion, and timestamps with small reproducible examples.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "193d3afd1cabe5aaa7eeaa0fd9b3958f5d16c6c87b2269a49b0399e2f623e313"
+  "image-to-pdf-page-size-pixels-points-a4": {
+    "title": "Why Image-to-PDF Files Have Giant Pages: Pixels, Points, A4, and Print Scaling",
+    "excerpt": "Why does an image-to-PDF conversion create huge pages? Understand pixels, PDF points, A4 and Letter sizes, print scaling, white borders, and cropping.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "0ba398904bf54902a827ef4e307c162c082777435c4252464cc7f3a6141a9171"
   },
-  "json-formatter-edge-cases": {
-    "title": "10 Malformed JSON Inputs Tested in Our Formatter",
-    "excerpt": "Actual browser results for ten syntax errors, duplicate keys, and an integer that changes during formatting, with reusable inputs.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "ffbfaf9e8cf619d7be6d40b090d33754b67f66057489425087146fb77d5fab23"
+  "are-uuid-v4-identifiers-unique-collisions-security": {
+    "title": "Are UUIDs Really Unique? Version 4 Collisions, Security, and Database IDs",
+    "excerpt": "Can UUIDv4 identifiers collide? Learn collision probabilities, database uniqueness, UUID security, and when random or time-ordered IDs work best.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "065349f3596884c9363bc9b118bfc31253b69bb054930c40e71de5812c1067ff"
   },
-  "csv-quotes-unicode-and-blank-fields": {
-    "title": "CSV Edge Cases: Quotes, Unicode, Newlines, and Blank Fields",
-    "excerpt": "Thirteen recorded CSV conversions show preserved strings, rejected headers, quoted newlines, and a semicolon-delimiter trap.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "3f7ed282b7e288f7003097b64e11bd5259c596f9976b04c3e2fc307178f463d2"
+  "why-images-look-blurry-on-websites-resolution-dpr": {
+    "title": "Why Images Look Blurry on Websites: Resolution, Retina Screens, and Responsive Images",
+    "excerpt": "Images look blurry after upload? Learn how resolution, CSS scaling, Retina displays, compression, and responsive images affect sharpness and how to fix it.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "e4c69b14b6a07a218148748cb4396a04d2eaf52ee6d46dc6f44516e6d6f7120c"
   },
-  "word-counter-unicode-experiment": {
-    "title": "How Our Word Counter Counts Emoji, Accents, and Chinese Text",
-    "excerpt": "Twelve measured examples explain whitespace words, UTF-16 characters, combining accents, emoji, and rough reading-time estimates.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "b3da987c79d6910a0b7fd5e6a6afa014abe068ace0757c1d2a975504070471f6"
+  "voiceover-script-length-words-per-minute-video-timing": {
+    "title": "How Long Should a Voiceover Script Be? Calculate Video and Presentation Timing",
+    "excerpt": "Estimate voiceover script length for videos and presentations. Calculate speaking time from word count, narration pace, pauses, and visual timing.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "24e2f40304bb7ba77cac7a71ededea05f4213aa0a3ecce8a3528b1a6b62ece97"
   },
-  "jpeg-png-webp-to-pdf-test": {
-    "title": "JPEG vs PNG vs WebP: Our Image-to-PDF Conversion Test",
-    "excerpt": "The same 640 by 400 illustration converted from three formats, with actual downloads, independent PDF inspection, and transparency limits.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "da55b48cea57b2420678b60b7a7c57f1af14e0e35d31515819f5d06375c8887f"
+  "spf-dkim-dmarc-email-authentication-alignment": {
+    "title": "SPF, DKIM, and DMARC Explained: Why an Authenticated Email Can Still Fail",
+    "excerpt": "Why can SPF and DKIM pass while DMARC fails? Learn email domain alignment, read authentication results, and diagnose common delivery problems.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "e28b4dde43f440b5a036e87e0a0dfece607c992e82450dc40b9d1af55dadf8d1"
   },
-  "temporary-email-for-authorized-testing-and-permitted-messages": {
-    "title": "Temporary Email for Authorized Testing and Permitted Messages",
-    "excerpt": "Test email receipt in applications you own or are authorized to test, respect address restrictions, and understand provider retention and recovery limits.",
-    "reviewed_at": "2026-10-07",
-    "body_sha256": "bd11a3b766a2122da49afaefe816f00f15996a79f2994ef2f3527a4cc2065640"
+  "why-email-verification-links-fail": {
+    "title": "Why Email Verification Links Fail: Expiration, Security Scanners, and One-Time Tokens",
+    "excerpt": "Why do email verification links expire or fail? Understand one-time tokens, security scanners, link rewriting, and safe ways to test verification flows.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "de5a0167463946a1b6a854783ff760a6794927a05b1a1039fc9d12eeba13b844"
+  },
+  "merge-digitally-signed-pdfs-signature-validation": {
+    "title": "Can You Merge Digitally Signed PDFs? What Happens to Signature Verification",
+    "excerpt": "Can you merge digitally signed PDFs without losing verification? Learn what happens to signatures, how to validate them, and safer ways to combine documents.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "45681bc839185dbd3098848b5687c56d892cff0cb3cb7223130e589f04fba5d2"
+  },
+  "why-image-colors-change-after-export-srgb-p3": {
+    "title": "Why Your Image Colors Change After Export: sRGB, Display P3, and Color Profiles",
+    "excerpt": "Why do image colors change after export? Learn how sRGB, Display P3, ICC profiles, browsers, and screen settings affect colors and how to fix differences.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "598a06ab8fa34cefacae9e6eb8b5e95ebd3b0331d011068a67a86726f707b7e5"
+  },
+  "review-text-changes-before-publishing": {
+    "title": "How to Review Text Changes Before Publishing: A Practical Guide to Line-by-Line Diffs",
+    "excerpt": "Learn how to compare original and revised text before publishing. Identify added, removed, or moved lines and review changes that affect meaning.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "b7b74c1c78f878787d6d813f38982b33c29aab8f5824ea59d89f72e2a034dc01"
+  },
+  "photo-exif-metadata-gps-privacy-after-editing": {
+    "title": "What Your Photos Reveal: EXIF Metadata, GPS Location, and Privacy After Editing",
+    "excerpt": "Discover what EXIF photo metadata can reveal, including GPS, timestamps and camera details. Learn what editing changes and how to check images before sharing.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "35050234313cc4094b5191368ca5e73049a727f40960d765ea0d725163eb433a"
+  },
+  "temperature-changes-celsius-fahrenheit-kelvin": {
+    "title": "Why Temperature Changes Convert Differently: Celsius, Fahrenheit, and Kelvin Explained",
+    "excerpt": "Learn why converting a 5°C temperature increase differs from converting 5°C itself. Understand Celsius, Fahrenheit, Kelvin, offsets, intervals, and formulas.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "0cb91aec6abe9de16a7531d8b6389e55e7970d0115aef5c3d9487ad173d12d0f"
+  },
+  "why-scanned-pdf-not-searchable-ocr-text-layers": {
+    "title": "Why You Can't Search a Scanned PDF: Understanding OCR, Text Layers, and Accessibility",
+    "excerpt": "Can't search or copy text from a scanned PDF? Learn why image-only PDFs behave differently, how OCR works, and how to check text accuracy and accessibility.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "6c70206cc2bc6aecf5ca14d3c163dd1f81fd19699005c4e6f424a37248789038"
+  },
+  "title-case-vs-sentence-case-editing-guide": {
+    "title": "Title Case vs Sentence Case: Editing Headlines, Labels, and Text Without Losing Meaning",
+    "excerpt": "Learn when to use title case, sentence case, and identifier styles. Edit headings without damaging acronyms, brand names, or technical text.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "64ab37c65be81675ba5e66f45d929b641dc1701f16889b0aaed7408ed7adde4b"
+  },
+  "what-makes-a-password-strong-length-randomness-uniqueness-mfa": {
+    "title": "What Actually Makes a Password Strong? Length, Randomness, Uniqueness, and MFA",
+    "excerpt": "Learn what actually makes passwords strong: length, randomness, uniqueness, password managers, MFA, recovery, and when password changes are really needed.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "c7a4ee230eba9b35a4d4e0fd9e953c706427fad794e8e86405aa92c47fccc155"
+  },
+  "turn-color-palette-into-accessible-ui": {
+    "title": "From Five Colors to a Usable Interface: Building an Accessible UI Palette",
+    "excerpt": "Turn five color swatches into a usable UI system with semantic roles, accessible contrast, button states, status colors, design tokens, and WCAG checks.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "0a6c1327820fb9b3531be78017d7893b363e4a9d6329f533d5a64df92309d338"
+  },
+  "choosing-sha-256-sha-384-or-sha-512-a-practical-hashing-decision-guide": {
+    "title": "Choosing SHA-256, SHA-384, or SHA-512: A Practical Hashing Decision Guide",
+    "excerpt": "Compare SHA-256, SHA-384 and SHA-512 for integrity checks, text hashing, APIs and authentication, and learn when hashing is the wrong tool.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "d4687c26b5e8571aee74891dd1fb670f6e2f6d55ed674e637471cbb5bd19c5ad"
+  },
+  "qr-codes-scan-reliably-print-screen-guide": {
+    "title": "QR Codes That Scan Reliably: A Preflight Guide for Print, Screens, and Posters",
+    "excerpt": "Learn how to make QR codes scan reliably on flyers, posters, screens, menus and print. Check margins, sizing, contrast, placement and final output.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "f7aee92442a3f0e587acace537ba0f4b982c89a0131976c465319700a0339125"
+  },
+  "valid-json-api-errors-types-nulls-structure": {
+    "title": "Why Valid JSON Still Breaks APIs: Types, Nulls, Numbers, and Structure",
+    "excerpt": "Learn why valid JSON can still fail an API. Debug strings vs numbers, null and missing fields, arrays, nesting, duplicate keys, booleans and payload structure.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "5efa79e3e05195e1907cf397593b82a65bc9d0bd832e308d9e86290429a3d08f"
   },
   "url-encoding-mistakes-spaces-plus-unicode": {
     "title": "URL Encoding Mistakes: Spaces, Plus Signs, Unicode, and Double Encoding",
     "excerpt": "Fifteen tested URL-encoding cases explain literal plus signs, form-query spaces, Unicode, reserved characters, and double encoding, with reusable fixtures.",
-    "reviewed_at": "2026-10-07",
+    "reviewed_at": "2026-10-09",
     "body_sha256": "cb9d71af681ea9ca128d2927bcd9236fd161db43d663f568268fb8fa432a2ebe"
   },
   "why-sha256-hashes-differ-for-identical-looking-text": {
     "title": "Why SHA-256 Hashes Differ for Identical-Looking Text",
     "excerpt": "Thirteen browser tests compare SHA-256 results for whitespace, Unicode, CRLF normalization, and JSON formatting, with independent checks and fixtures.",
-    "reviewed_at": "2026-10-07",
+    "reviewed_at": "2026-10-09",
     "body_sha256": "dafc11cb6a20c0d7ec881c99752da2649d7aa7283015c5cb294022d284f3f06f"
+  },
+  "best-practices-for-background-removal-when-working-with-design": {
+    "title": "Background Removal for Design and Product Photography",
+    "excerpt": "Prepare natural cutouts, inspect difficult edges, preserve product details, and export images for websites, design projects, and marketplace listings.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "23c60c0246af2820806a25d3f93a4db3ce8bae0d56779b8d79e1d29e19f3463a"
+  },
+  "simple-pdf-workflow-without-software": {
+    "title": "PDF Workflows: Merge Files, Convert Images, and Check the Result",
+    "excerpt": "Prepare readable images, assemble PDFs in the right order, and check page dimensions, protected files, forms, signatures, and the final download.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "8c0ebf798ce0c042ad636c9127e370bb42a25c0cece4a89c5e8d0690e06cc834"
+  },
+  "temporary-email-for-authorized-testing-and-permitted-messages": {
+    "title": "Temporary Email for Authorized Testing and Permitted Messages",
+    "excerpt": "Test email receipt in applications you own or are authorized to test, respect address restrictions, and understand provider retention and recovery limits.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "bd11a3b766a2122da49afaefe816f00f15996a79f2994ef2f3527a4cc2065640"
+  },
+  "small-tools-that-save-developers-time": {
+    "title": "Debug API Data with JSON, Base64, and Browser Tools",
+    "excerpt": "Work through JSON types, encoding, URL components, JWT claims, hashes, CSV conversion, and timestamps with small reproducible examples.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "193d3afd1cabe5aaa7eeaa0fd9b3958f5d16c6c87b2269a49b0399e2f623e313"
+  },
+  "json-formatter-edge-cases": {
+    "title": "10 Malformed JSON Inputs Tested in Our Formatter",
+    "excerpt": "Actual browser results for ten syntax errors, duplicate keys, and an integer that changes during formatting, with reusable inputs.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "ffbfaf9e8cf619d7be6d40b090d33754b67f66057489425087146fb77d5fab23"
+  },
+  "csv-quotes-unicode-and-blank-fields": {
+    "title": "CSV Edge Cases: Quotes, Unicode, Newlines, and Blank Fields",
+    "excerpt": "Thirteen recorded CSV conversions show preserved strings, rejected headers, quoted newlines, and a semicolon-delimiter trap.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "3f7ed282b7e288f7003097b64e11bd5259c596f9976b04c3e2fc307178f463d2"
+  },
+  "word-counter-unicode-experiment": {
+    "title": "How Our Word Counter Counts Emoji, Accents, and Chinese Text",
+    "excerpt": "Twelve measured examples explain whitespace words, UTF-16 characters, combining accents, emoji, and rough reading-time estimates.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "b3da987c79d6910a0b7fd5e6a6afa014abe068ace0757c1d2a975504070471f6"
+  },
+  "jpeg-png-webp-to-pdf-test": {
+    "title": "JPEG vs PNG vs WebP: Our Image-to-PDF Conversion Test",
+    "excerpt": "The same 640 by 400 illustration converted from three formats, with actual downloads, independent PDF inspection, and transparency limits.",
+    "reviewed_at": "2026-10-09",
+    "body_sha256": "da55b48cea57b2420678b60b7a7c57f1af14e0e35d31515819f5d06375c8887f"
   }
 }

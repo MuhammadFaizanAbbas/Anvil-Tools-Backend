@@ -70,7 +70,7 @@ function renderArticle(post, siteOrigin) {
   const rawDescription = post.seo_description || post.excerpt || '';
   const description = rawDescription.includes('Anvil Tools') ? rawDescription : `Anvil Tools: ${rawDescription}`;
   const image = imageUrl(post, siteOrigin);
-  const imageSize = exampleImages[post.cover_path];
+  const imageSize = exampleImages[post.cover_path] || (post.cover_image_id ? { width: 1672, height: 941 } : null);
   const imageDimensions = imageSize ? ` width="${imageSize.width}" height="${imageSize.height}"` : '';
   const tags = post.tags || [];
   const rendered = renderMarkdown(post.body, { title: post.title });

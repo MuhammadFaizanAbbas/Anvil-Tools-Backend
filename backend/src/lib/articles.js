@@ -77,12 +77,18 @@ function renderArticle(post, siteOrigin) {
   const words = Number.isSafeInteger(post.word_count) && post.word_count >= 0 ? post.word_count : String(post.body || '').trim().split(/\s+/).filter(Boolean).length;
   const review = reviewFor(post);
   const labReport = relatedLabReports[post.slug];
-  const publisherId = `${siteOrigin}/about.html#velloxtech`;
+  const publisherId = `${siteOrigin}/#organization`;
+  const parentOrganizationId = `${siteOrigin}/about.html#velloxtech`;
   const authorId = `${siteOrigin}/editorial-policy.html#velloxtech-editorial-team`;
   const ld = JSON.stringify({
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'Organization', '@id': publisherId, name: 'VelloxTech', url: `${siteOrigin}/about.html` },
+      { '@type': 'Organization', '@id': parentOrganizationId, name: 'VelloxTech', url: `${siteOrigin}/about.html` },
+      {
+        '@type': 'Organization', '@id': publisherId, name: 'Anvil Tools', url: `${siteOrigin}/`,
+        logo: { '@type': 'ImageObject', url: `${siteOrigin}/assets/images/apple-touch-icon.png`, width: 180, height: 180 },
+        parentOrganization: { '@id': parentOrganizationId },
+      },
       { '@type': 'Organization', '@id': authorId, name: 'VelloxTech Editorial Team', url: `${siteOrigin}/editorial-policy.html`, parentOrganization: { '@id': publisherId } },
       { '@type': 'BreadcrumbList', '@id': `${canonical}#breadcrumb`, itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteOrigin}/` },
